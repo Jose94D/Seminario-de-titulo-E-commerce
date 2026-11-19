@@ -1,26 +1,20 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import Sidebar from "../components/sidebar";
 
-const NotFound = () => {
-  return (
-    <>
-      <div className="container my-5">
-        <div className="row justify-content-center align-items-center">
-          <h4 className="text-center mb-2 mb-sm-5">Página no encontrada</h4>
-          <img
-            style={{ width: "100%", height: "300px", objectFit: "contain" }}
-            src="/images/not-found.webp"
-            alt="Not-found"
-          />
-          <button className="col-md-3 col-sm-6 col-12 btn btn-success mt-5">
-            <Link to="/" className="text-white text-decoration-none">
-              Inicio
-            </Link>
-          </button>
-        </div>
-      </div>
-    </>
-  );
-};
+const NotFound = () => (
+  <>
+    <Sidebar />
+    <main className="main-wrap">
+      <section className="content-main">
+        <h1 className="content-title">Página no encontrada</h1>
+        <p className="text-muted mt-3">Esta sección del panel no existe.</p>
+        <Link to="/" className="btn btn-dark">
+          Volver al resumen
+        </Link>
+      </section>
+    </main>
+  </>
+);
 
 export default NotFound;

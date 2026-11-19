@@ -11,7 +11,7 @@ const OrderMain = () => {
   return (
     <section className="content-main">
       <div className="content-header">
-        <h2 className="content-title">Ventas</h2>
+        <h1 className="content-title">Ventas</h1>
       </div>
       <div className="card mb-4 shadow-sm">
         <div className="card-body">

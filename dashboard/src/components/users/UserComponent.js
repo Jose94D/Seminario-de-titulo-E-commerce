@@ -6,62 +6,45 @@ import Message from "../LoadingError/Error";
 
 const UserComponent = () => {
   const dispatch = useDispatch();
-
-  const userList = useSelector((state) => state.userList);
-  const { loading, error, users } = userList;
+  const { loading, error, users } = useSelector((state) => state.userList);
 
   useEffect(() => {
     dispatch(listUser());
   }, [dispatch]);
+
   return (
     <section className="content-main">
       <div className="content-header">
-        <h2 className="content-title">Usuarios</h2>
-        <div>
-        </div>
+        <h1 className="content-title">Usuarios</h1>
       </div>
-      <div className="card mb-4">
-        
-
-        {/* Card */}
+      <div className="card">
         <div className="card-body">
           {loading ? (
             <Loading />
           ) : error ? (
             <Message variant="alert-danger">{error}</Message>
           ) : (
-            <div className="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4">
+            <div className="row g-3">
               {users.map((user) => (
-                <div className="col" key={user._id}>
-                  <div className="card card-user shadow-sm">
-                    <div className="card-header">
-                      <img
-                        className="img-md img-avatar"
-                        src="images/favicon.png"
-                        alt="User pic"
-                      />
+                <div className="col-sm-6 col-lg-4 col-xxl-3" key={user._id}>
+                  <article className="user-tile">
+                    <div className="avatar" aria-hidden="true">
+                      {user.name.charAt(0).toUpperCase()}
                     </div>
-                    <div className="card-body">
-                      <h5 className="card-title mt-5">{user.name}</h5>
-                      <div className="card-text text-muted">
-                        {user.isAdmin === true ? (
-                          <p className="m-0">Administrador</p>
-                        ) : (
-                          <p className="m-0">Cliente</p>
-                        )}
-
-                        <p>
-                          <a href={`mailto:${user.email}`}>{user.email}</a>
-                        </p>
-                      </div>
+                    <div className="fw-semibold mt-3" style={{ fontSize: 17 }}>
+                      {user.name}
                     </div>
-                  </div>
+                    <span className={`pill mt-2 ${user.isAdmin ? "pill-ok" : "pill-wait"}`}>
+                      {user.isAdmin ? "Administrador" : "Cliente"}
+                    </span>
+                    <div className="mt-3 text-truncate">
+                      <a href={`mailto:${user.email}`}>{user.email}</a>
+                    </div>
+                  </article>
                 </div>
               ))}
             </div>
           )}
-
-          
         </div>
       </div>
     </section>

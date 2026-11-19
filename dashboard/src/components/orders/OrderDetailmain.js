@@ -1,99 +1,63 @@
 import React, { useEffect } from "react";
-import OrderDetailProducts from "./OrderDetailProducts";
-import OrderDetailInfo from "./OrderDetailInfo";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  deliverOrder,
-  getOrderDetails,
-} from "../../Redux/Actions/OrderActions";
+import moment from "moment";
+import "moment/locale/es";
+import OrderDetailProducts from "./OrderDetailProducts";
+import OrderDetailInfo from "./OrderDetailInfo";
+import { deliverOrder, getOrderDetails } from "../../Redux/Actions/OrderActions";
 import Loading from "../LoadingError/Loading";
 import Message from "../LoadingError/Error";
-import moment from "moment";
 
-const OrderDetailmain = (props) => {
-  const { orderId } = props;
+const OrderDetailmain = ({ orderId }) => {
   const dispatch = useDispatch();
-
-  const orderDetails = useSelector((state) => state.orderDetails);
-  const { loading, error, order } = orderDetails;
-
-  const orderDeliver = useSelector((state) => state.orderDeliver);
-  const { loading: loadingDelivered, success: successDelivered } = orderDeliver;
+  const { loading, error, order } = useSelector((state) => state.orderDetails);
+  const { loading: loadingDelivered, success: successDelivered } = useSelector((state) => state.orderDeliver);
 
   useEffect(() => {
     dispatch(getOrderDetails(orderId));
   }, [dispatch, orderId, successDelivered]);
 
-  const deliverHandler = () => {
-    dispatch(deliverOrder(order));
-  };
-
   return (
     <section className="content-main">
-      <div className="content-header">
-        <Link to="/orders" className="btn btn-dark text-white">
-          Volver a ventas
-        </Link>
-      </div>
-
+      <Link to="/orders" className="fw-semibold">
+        ← Ventas
+      </Link>
       {loading ? (
         <Loading />
       ) : error ? (
         <Message variant="alert-danger">{error}</Message>
       ) : (
-        <div className="card">
-          <header className="card-header p-3 Header-green">
-            <div className="row align-items-center ">
-              <div className="col-lg-6 col-md-6">
-                <span>
-                  <i className="far fa-calendar-alt mx-2"></i>
-                  <b className="text-white">
-                    {moment(order.createdAt).format("llll")}
-                  </b>
-                </span>
-                <br />
-                <small className="text-white mx-3 ">
-                  ID de compra: {order._id}
-                </small>
-              </div>
-              
+        <>
+          <div className="content-header mt-2">
+            <div>
+              <h1 className="content-title">Pedido #{order._id.slice(-6).toUpperCase()}</h1>
+              <p className="text-muted m-0 mt-2">{moment(order.createdAt).locale("es").format("LLLL")}</p>
             </div>
-          </header>
-          <div className="card-body">
-            {/* Order info */}
-            <OrderDetailInfo order={order} />
+            {order.isDelivered ? (
+              <span className="pill pill-ok">Entregado · {moment(order.deliveredAt).locale("es").format("D MMM YYYY")}</span>
+            ) : (
+              <button
+                type="button"
+                onClick={() => dispatch(deliverOrder(order))}
+                className="btn btn-dark"
+                disabled={loadingDelivered || !order.isPaid}
+                title={order.isPaid ? undefined : "El pedido aún no está pagado"}
+              >
+                {loadingDelivered ? "Guardando…" : "Marcar como entregado"}
+              </button>
+            )}
+          </div>
 
-            <div className="row">
-              <div className="col-lg-9">
-                <div className="table-responsive">
-                  <OrderDetailProducts order={order} loading={loading} />
-                </div>
-              </div>
-              {/* Payment Info */}
-              <div className="col-lg-3">
-                <div className="box shadow-sm bg-light">
-                  {order.isDelivered ? (
-                    <button className="btn btn-success col-12">
-                      Enviado ({" "}
-                      {moment(order.isDeliveredAt).format("MMM Do YY")})
-                    </button>
-                  ) : (
-                    <>
-                      {loadingDelivered && <Loading />}
-                      <button
-                        onClick={deliverHandler}
-                        className="btn btn-dark col-12"
-                      >
-                        Cambiar a enviado
-                      </button>
-                    </>
-                  )}
-                </div>
+          <div className="card">
+            <div className="card-body">
+              <OrderDetailInfo order={order} />
+              <div className="table-responsive">
+                <OrderDetailProducts order={order} />
               </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </section>
   );

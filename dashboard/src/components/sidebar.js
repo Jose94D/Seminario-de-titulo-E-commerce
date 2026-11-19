@@ -1,85 +1,45 @@
 import React from "react";
 import { Link, NavLink } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../Redux/Actions/userActions";
+
+const LINKS = [
+  ["/", "Resumen", true],
+  ["/orders", "Ventas"],
+  ["/products", "Productos"],
+  ["/addproduct", "Añadir producto"],
+  ["/users", "Usuarios"],
+];
 
 const Sidebar = () => {
-  return (
-    <div>
-      <aside className="navbar-aside" id="offcanvas_aside">
-        <div className="aside-top">
-          <Link to="/" className="brand-wrap">
-            <img
-              src="/images/logo.webp"
-              style={{ height: "46" }}
-              className="logo"
-              alt="Ecommerce dashboard template"
-            />
-          </Link>
-          <div>
-            <button className="btn btn-icon btn-aside-minimize">
-              <i className="text-muted fas fa-stream"></i>
-            </button>
-          </div>
-        </div>
+  const dispatch = useDispatch();
+  const { userInfo } = useSelector((state) => state.userLogin);
 
-        <nav>
-          <ul className="menu-aside">
-            <li className="menu-item">
-              <NavLink
-                activeClassName="active"
-                className="menu-link"
-                to="/"
-                exact={true}
-              >
-                <i className="icon fas fa-home"></i>
-                <span className="text">Inicio</span>
+  return (
+    <aside className="navbar-aside" id="offcanvas_aside">
+      <Link to="/" className="brand-wrap">
+        TUNING SHOP
+        <br />
+        <span>PANEL</span>
+      </Link>
+      <nav aria-label="Panel">
+        <ul className="menu-aside">
+          {LINKS.map(([to, label, exact]) => (
+            <li key={to}>
+              <NavLink className="menu-link" activeClassName="active" to={to} exact={exact}>
+                {label}
               </NavLink>
             </li>
-            <li className="menu-item">
-              <NavLink
-                activeClassName="active"
-                className="menu-link"
-                to="/products"
-              >
-                <i className="icon fas fa-shopping-bag"></i>
-                <span className="text">Productos</span>
-              </NavLink>
-            </li>
-            <li className="menu-item">
-              <NavLink
-                activeClassName="active"
-                className="menu-link"
-                to="/addproduct"
-              >
-                <i className="icon fas fa-cart-plus"></i>
-                <span className="text">Añadir productos</span>
-              </NavLink>
-            </li>
-            <li className="menu-item">
-              <NavLink
-                activeClassName="active"
-                className="menu-link"
-                to="/orders"
-              >
-                <i className="icon fas fa-bags-shopping"></i>
-                <span className="text">Ventas</span>
-              </NavLink>
-            </li>
-            <li className="menu-item">
-              <NavLink
-                activeClassName="active"
-                className="menu-link"
-                to="/users"
-              >
-                <i className="icon fas fa-user"></i>
-                <span className="text">Usuarios</span>
-              </NavLink>
-            </li>
-          </ul>
-          <br />
-          <br />
-        </nav>
-      </aside>
-    </div>
+          ))}
+        </ul>
+      </nav>
+      <div className="aside-foot">
+        {userInfo ? userInfo.name : "Administrador"}
+        <button type="button" onClick={() => dispatch(logout())}>
+          Cerrar sesión
+        </button>
+      </div>
+    </aside>
   );
 };
 

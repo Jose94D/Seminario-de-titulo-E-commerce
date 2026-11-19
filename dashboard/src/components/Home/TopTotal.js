@@ -1,54 +1,27 @@
 import React from "react";
+import { formatPrice } from "../../format";
 
-const TopTotal = (props) => {
-  const { orders, products } = props;
-  let totalSale = 0;
-  if (orders) {
-    orders.map((order) =>
-      order.isPaid === true ? (totalSale = totalSale + order.totalPrice) : null
-    );
-  }
+const TopTotal = ({ orders = [], products = [] }) => {
+  const paid = orders.filter((o) => o.isPaid);
+  const income = paid.reduce((sum, o) => sum + o.totalPrice, 0);
+  const toDeliver = paid.filter((o) => !o.isDelivered).length;
+  const outOfStock = products.filter((p) => p.countInStock === 0).length;
+
+  const stats = [
+    ["Ingresos", formatPrice(income)],
+    ["Pedidos", orders.length],
+    ["Por entregar", toDeliver, true],
+    ["Sin stock", outOfStock],
+  ];
+
   return (
-    <div className="row">
-      <div className="col-lg-4">
-        <div className="card card-body mb-4 shadow-sm">
-          <article className="icontext">
-            <span className="icon icon-sm rounded-circle alert-primary">
-              <i className="text-primary fas fa-usd-circle"></i>
-            </span>
-            <div className="text">
-              <h6 className="mb-1">Ingresos en total</h6>{" "}
-              <span>${totalSale.toFixed(0)}</span>
-            </div>
-          </article>
+    <div className="stat-grid">
+      {stats.map(([label, value, accent]) => (
+        <div className="stat" key={label}>
+          <div className="stat-label">{label}</div>
+          <div className={`stat-value ${accent ? "accent" : ""}`}>{value}</div>
         </div>
-      </div>
-      <div className="col-lg-4">
-        <div className="card card-body mb-4 shadow-sm">
-          <article className="icontext">
-            <span className="icon icon-sm rounded-circle alert-success">
-              <i className="text-success fas fa-bags-shopping"></i>
-            </span>
-            <div className="text">
-              <h6 className="mb-1">Total de ventas</h6>
-              {orders ? <span>{orders.length}</span> : <span>0</span>}
-            </div>
-          </article>
-        </div>
-      </div>
-      <div className="col-lg-4">
-        <div className="card card-body mb-4 shadow-sm">
-          <article className="icontext">
-            <span className="icon icon-sm rounded-circle alert-warning">
-              <i className="text-warning fas fa-shopping-basket"></i>
-            </span>
-            <div className="text">
-              <h6 className="mb-1">Productos en el sistema</h6>
-              {products ? <span>{products.length}</span> : <span>0</span>}
-            </div>
-          </article>
-        </div>
-      </div>
+      ))}
     </div>
   );
 };

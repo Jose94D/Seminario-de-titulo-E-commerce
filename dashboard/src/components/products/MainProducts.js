@@ -22,16 +22,15 @@ const MainProducts = () => {
   return (
     <section className="content-main">
       <div className="content-header">
-        <h2 className="content-title">Productos</h2>
+        <h1 className="content-title">Productos</h1>
         <div>
           <Link to="/addproduct" className="btn btn-primary">
-            Añadir producto
+            + Añadir producto
           </Link>
         </div>
       </div>
 
-      <div className="card mb-4 shadow-sm">
-
+      <div className="card mb-4">
         <div className="card-body">
           {errorDelete && (
             <Message variant="alert-danger">{errorDelete}</Message>
