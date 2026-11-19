@@ -29,6 +29,13 @@ const productSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    category: {
+      type: String,
+      enum: ["baterias", "lubricantes", "accesorios"],
+      default: "accesorios",
+    },
+    // Datos técnicos que la ficha muestra destacados, p. ej. { label: "Voltaje", value: "12V" }
+    specs: [{ label: String, value: String }],
     reviews: [reviewSchema],
     rating: {
       type: Number,

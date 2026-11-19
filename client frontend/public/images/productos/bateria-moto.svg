@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img"><ellipse cx="300" cy="520" rx="230" ry="16" fill="#d5d7da"/>
+  <rect x="90" y="190" width="420" height="320" rx="22" fill="#1b1e22"/>
+  <rect x="90" y="190" width="420" height="58" rx="20" fill="#2b2f35"/>
+  <rect x="150" y="146" width="62" height="50" rx="8" fill="#0d5c4a"/>
+  <rect x="388" y="146" width="62" height="50" rx="8" fill="#8a8e95"/>
+  <text x="181" y="182" text-anchor="middle" font-family="Archivo, Arial, sans-serif" font-weight="800" font-size="30" fill="#fff">+</text>
+  <text x="419" y="180" text-anchor="middle" font-family="Archivo, Arial, sans-serif" font-weight="800" font-size="30" fill="#121417">−</text>
+  <rect x="140" y="292" width="250" height="14" rx="7" fill="#3a3f46"/>
+  <rect x="140" y="322" width="160" height="14" rx="7" fill="#3a3f46"/>
+  <text x="140" y="430" font-family="Archivo, Arial, sans-serif" font-weight="800" font-size="54" fill="#e8e9eb" letter-spacing="3">12V · 9Ah</text>
+  <text x="142" y="472" font-family="Inter, Arial, sans-serif" font-weight="600" font-size="22" fill="#9fd8c6" letter-spacing="4">PARA MOTO</text></svg>
