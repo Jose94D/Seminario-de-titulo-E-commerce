@@ -5,6 +5,11 @@ import Order from "./../Models/OrderModel.js";
 
 const orderRouter = express.Router();
 
+// Un pedido solo lo ve o lo modifica su dueño o un administrador.
+// order.user puede venir poblado (documento) o como ObjectId.
+const isOwnerOrAdmin = (order, user) =>
+  user.isAdmin || String(order.user._id ?? order.user) === String(user._id);
+
 // CREATE ORDER
 orderRouter.post(
   "/",
@@ -74,7 +79,8 @@ orderRouter.get(
       "name email"
     );
 
-    if (order) {
+    // 404 también para pedidos ajenos, para no revelar que existen
+    if (order && isOwnerOrAdmin(order, req.user)) {
       res.json(order);
     } else {
       res.status(404);
@@ -90,7 +96,7 @@ orderRouter.put(
   asyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id);
 
-    if (order) {
+    if (order && isOwnerOrAdmin(order, req.user)) {
       order.isPaid = true;
       order.paidAt = Date.now();
       order.paymentResult = {
@@ -109,10 +115,11 @@ orderRouter.put(
   })
 );
 
-// ORDER IS PAID
+// ORDER IS DELIVERED
 orderRouter.put(
   "/:id/delivered",
   protect,
+  admin,
   asyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id);
 

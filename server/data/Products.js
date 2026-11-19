@@ -1,7 +1,7 @@
 const products = [
   {
     name: "Velcro Ballerinas For Girls  (Pink)",
-    image: "/images/6.png",
+    image: "/images/6.webp",
     description:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book",
     price: 89,
@@ -11,7 +11,7 @@ const products = [
   },
   {
     name: "Velcro Sneakers For Boys & Girls  (Blue)",
-    image: "/images/5.png",
+    image: "/images/5.webp",
     description:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book",
     price: 599,
@@ -21,7 +21,7 @@ const products = [
   },
   {
     name: "Sesame Street Unisex-Child ELMO Puppet Slipper",
-    image: "/images/4.png",
+    image: "/images/4.webp",
     description:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book",
     price: 929,
@@ -31,7 +31,7 @@ const products = [
   },
   {
     name: "Lace Casual Boots For Boys & Girls  (Tan)",
-    image: "/images/3.png",
+    image: "/images/3.webp",
     description:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book",
     price: 399,
@@ -41,7 +41,7 @@ const products = [
   },
   {
     name: "Lace Walking Shoes For Boys & Girls  (Pink)",
-    image: "/images/2.png",
+    image: "/images/2.webp",
     description:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book",
     price: 49,
@@ -51,7 +51,7 @@ const products = [
   },
   {
     name: "Women Red Heels Sandal",
-    image: "/images/1.png",
+    image: "/images/1.webp",
     description:
       "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book",
     price: 29,

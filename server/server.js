@@ -15,7 +15,10 @@ app.use(express.json());
 app.use(cors());
 
 // API
-app.use("/api/import", ImportData);
+// Reemplaza usuarios y productos con los de ejemplo: solo fuera de producción.
+if (process.env.NODE_ENV !== "production") {
+  app.use("/api/import", ImportData);
+}
 app.use("/api/products", productRoute);
 app.use("/api/users", userRouter);
 app.use("/api/orders", orderRouter);

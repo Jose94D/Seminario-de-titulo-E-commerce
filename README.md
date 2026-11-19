@@ -8,7 +8,9 @@ Tienda online para un local de tuning y accesorios automotrices de Linares, Chil
 
 Está hecha con el stack **MERN**: una API en **Express** sobre **MongoDB**, y dos aplicaciones **React** con **Redux** (la tienda y el panel).
 
-> **Estado:** proyecto de **seminario de título** presentado en 2023. Se publica como respaldo y punto de partida para mejoras; las dependencias todavía son de esa época.
+> **Estado:** versión 2, en desarrollo. Parte del proyecto de **seminario de título** presentado en 2023 y lo moderniza: imágenes optimizadas, correcciones de seguridad y, próximamente, un rediseño completo.
+>
+> **Versión original:** el proyecto tal como se presentó en 2023 está en la rama [`tesis-2023`](../../tree/tesis-2023) y en el tag [`v1.0-tesis`](../../releases/tag/v1.0-tesis).
 
 ## Capturas
 
@@ -75,11 +77,15 @@ Lo que tiene:
 * Token **JWT** firmado con una clave del `.env`, exigido en las rutas privadas.
 * Las rutas de administración exigen además `isAdmin`.
 * Credenciales (MongoDB, PayPal, JWT, Google Maps) fuera del código, en archivos `.env`.
+* Un pedido solo lo ve o lo marca como pagado su dueño o un administrador; a los demás la API responde 404, sin revelar que existe.
+* Marcar un pedido como entregado es exclusivo de administradores.
+* Las rutas `/api/import`, que reemplazan usuarios y productos con los de ejemplo, solo existen cuando `NODE_ENV` no es `production`.
 
-Problemas conocidos, que dejo documentados en vez de corregirlos para conservar el proyecto como se entregó:
+Corregido en 2026, después de la entrega: en la versión presentada cualquier usuario con sesión podía ver, pagar o marcar como entregado un pedido ajeno, y `/api/import` quedaba abierto también en producción.
 
-* `POST /api/import/user` y `POST /api/import/products` no piden sesión y **reemplazan** usuarios y productos. Solo para uso local.
-* `GET /api/orders/:id` no comprueba que el pedido sea del usuario que lo pide.
+Pendiente:
+
+* El pago se marca con los datos que envía el navegador tras el botón de PayPal; la API no lo confirma con PayPal.
 * El token se guarda en `localStorage` y CORS acepta cualquier origen.
 
 ## Tecnología
@@ -183,7 +189,7 @@ npm run server
 | `PAYPAL_CLIENT_ID` | Client ID de una app PayPal (sandbox para pruebas). |
 | `MONGO_URL` | Cadena de conexión de MongoDB. |
 
-Con la API corriendo, carga los datos de ejemplo (borra los existentes):
+Con la API corriendo y `NODE_ENV=development`, carga los datos de ejemplo (borra los existentes):
 
 ```bash
 curl -X POST http://localhost:5000/api/import/user
