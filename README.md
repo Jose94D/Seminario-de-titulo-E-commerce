@@ -14,36 +14,36 @@ Está hecha con el stack **MERN**: una API en **Express** sobre **MongoDB**, y d
 
 ## Capturas
 
-Con los productos y cuentas de ejemplo del proyecto (por eso el catálogo muestra calzado).
+Versión 2, con el rediseño «Taller premium» y el catálogo de ejemplo (productos, precios e ilustraciones de demostración). Las capturas de la versión presentada en 2023 están en la rama [`tesis-2023`](../../tree/tesis-2023).
 
 <!-- Sin tabla: en una tabla GitHub ajusta cada columna al texto y las imágenes quedan de distinto tamaño. -->
 <p align="center">
-  <img src="docs/capturas/inicio.png" width="420" alt="Inicio con buscador, categorías y catálogo de productos">
-  <img src="docs/capturas/producto.png" width="420" alt="Ficha de producto con precio, stock, valoración y botón para añadir al carro">
+  <img src="docs/capturas/inicio.png" width="420" alt="Inicio: titular, producto destacado con botón de compra, categorías y productos recién llegados">
+  <img src="docs/capturas/producto.png" width="420" alt="Ficha de la batería 12V 60Ah con precio, stock, especificaciones técnicas y botón para añadir al carro">
 </p>
 <p align="center">
-  <img src="docs/capturas/carrito.png" width="420" alt="Carrito con dos productos y selector de cantidad">
+  <img src="docs/capturas/carrito.png" width="420" alt="Carro con los pasos de la compra, dos productos y el resumen del total">
   <img src="docs/capturas/confirmar_pedido.png" width="420" alt="Resumen del pedido antes de pagar: cliente, entrega, productos y total">
 </p>
 <p align="center">
-  <img src="docs/capturas/pedido.png" width="420" alt="Pedido pagado y enviado, con los productos y el total">
-  <img src="docs/capturas/perfil.png" width="420" alt="Perfil del cliente con RUT, teléfono y lista de compras">
+  <img src="docs/capturas/pedido.png" width="420" alt="Confirmación: pedido pagado y entregado, con cliente, forma de entrega y total">
+  <img src="docs/capturas/perfil.png" width="420" alt="Mi cuenta: pedidos con su estado de pago y entrega">
 </p>
 
-* **Catálogo:** búsqueda por nombre y paginación de 12 productos.
-* **Producto:** precio, stock, valoración y reseñas de los clientes.
-* **Compra:** carrito, dirección de envío, método de pago, resumen y pago con PayPal.
-* **Perfil:** datos del cliente (incluido RUT, teléfono y dirección) e historial de pedidos.
+* **Catálogo:** categorías (baterías, lubricantes y accesorios), búsqueda por nombre y paginación de 12 productos.
+* **Producto:** precio, stock, especificaciones técnicas, valoración y reseñas de los clientes.
+* **Compra:** carro, entrega (retiro en el local o despacho), confirmación y pago con PayPal, con un botón para simular el pago en la demo.
+* **Mi cuenta:** pedidos con su estado y datos del cliente (incluido RUT, teléfono y dirección).
 * **Local:** páginas de horario de atención, ubicación con Google Maps y sobre nosotros.
 
 ### Panel de administración
 
 <p align="center">
   <img src="docs/capturas/admin_login.png" width="420" alt="Inicio de sesión del panel">
-  <img src="docs/capturas/admin_resumen.png" width="420" alt="Resumen con ingresos, ventas y productos; los gráficos de MongoDB Charts quedan cargando sin el cluster original">
+  <img src="docs/capturas/admin_resumen.png" width="420" alt="Resumen con ingresos, pedidos, pedidos por entregar, últimos pedidos y productos con stock bajo">
 </p>
 <p align="center">
-  <img src="docs/capturas/admin_productos.png" width="420" alt="Listado de productos con botones para editar y eliminar">
+  <img src="docs/capturas/admin_productos.png" width="420" alt="Productos con categoría, stock, precio y botones para editar y eliminar">
   <img src="docs/capturas/admin_pedidos.png" width="420" alt="Ventas con estado de pago y de envío">
 </p>
 <p align="center">
@@ -52,11 +52,10 @@ Con los productos y cuentas de ejemplo del proyecto (por eso el catálogo muestr
 </p>
 
 * **Acceso:** login solo para cuentas de administrador.
-* **Resumen:** totales de ventas, pedidos y productos, últimos pedidos y gráficos embebidos de **MongoDB Charts** (dependían del cluster de Atlas original, que ya no existe, así que hoy quedan cargando).
-* **Productos:** crear, editar y eliminar.
+* **Resumen:** ingresos, pedidos, pedidos por entregar, productos sin stock, últimos pedidos y productos con stock bajo.
+* **Productos:** crear, editar y eliminar, con categoría, stock y vista previa de la imagen.
 * **Pedidos:** listado, detalle y marcar como entregado.
 * **Usuarios:** listado de clientes registrados.
-* **Categorías:** solo maqueta visual, no está conectada a la API.
 
 ## Funciones
 
@@ -81,7 +80,7 @@ Lo que tiene:
 * Marcar un pedido como entregado es exclusivo de administradores.
 * Las rutas `/api/import`, que reemplazan usuarios y productos con los de ejemplo, solo existen cuando `NODE_ENV` no es `production`.
 
-Corregido en 2026, después de la entrega: en la versión presentada cualquier usuario con sesión podía ver, pagar o marcar como entregado un pedido ajeno, y `/api/import` quedaba abierto también en producción.
+Corregido en 2026, después de la entrega: en la versión presentada cualquier usuario con sesión podía ver, pagar o marcar como entregado un pedido ajeno, y `/api/import` quedaba abierto también en producción. Además, un token válido de un usuario ya eliminado provocaba un error 500; ahora responde 401.
 
 Pendiente:
 
@@ -95,10 +94,10 @@ Pendiente:
 | API | **Node.js**, **Express 4**, express-async-handler, morgan |
 | Base de datos | **MongoDB Atlas** con **Mongoose 6** |
 | Autenticación | **jsonwebtoken**, **bcryptjs** |
-| Tienda | **React 17**, **Redux** + redux-thunk, React Router 5, axios |
-| Panel admin | **React 17**, **Redux** + redux-thunk, React Router 5, axios |
+| Tienda | **React 17**, **Redux** + redux-thunk, React Router 5, axios, CSS propio (Archivo + Inter) |
+| Panel admin | **React 17**, **Redux** + redux-thunk, React Router 5, axios, Bootstrap 5.3 con tema propio |
 | Pagos | react-paypal-button-v2 (PayPal) |
-| Extras | Font Awesome, react-toastify, Google Maps, MongoDB Charts |
+| Extras | Google Maps, react-toastify (panel) |
 
 ```text
  Cliente  ───► Tienda React  (:3000) ──┐
@@ -132,6 +131,8 @@ erDiagram
         string name
         string image
         string description
+        string category "baterias, lubricantes o accesorios"
+        array specs "datos técnicos destacados"
         number rating
         number numReviews
         number price
