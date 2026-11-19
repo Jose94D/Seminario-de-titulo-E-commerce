@@ -82,9 +82,10 @@ Lo que tiene:
 
 Corregido en 2026, después de la entrega: en la versión presentada cualquier usuario con sesión podía ver, pagar o marcar como entregado un pedido ajeno, y `/api/import` quedaba abierto también en producción. Además, un token válido de un usuario ya eliminado provocaba un error 500; ahora responde 401.
 
+Pago en modo demo: el pedido se marca como pagado con los datos que envía el navegador tras el botón de PayPal, a propósito, para poder probar la compra completa. En producción, la API confirmaría el pago directamente con PayPal antes de marcarlo.
+
 Pendiente:
 
-* El pago se marca con los datos que envía el navegador tras el botón de PayPal; la API no lo confirma con PayPal.
 * El token se guarda en `localStorage` y CORS acepta cualquier origen.
 
 ## Tecnología
@@ -238,13 +239,13 @@ npm start
 │       ├── screens/        resumen, productos, pedidos, usuarios
 │       ├── components/
 │       └── Redux/
-└── Informe de seminario.docx
+└── docs/                   capturas, banner e informe del seminario (PDF)
 ```
 
 ## Nota de uso
 
-Proyecto académico. Los productos y las cuentas son datos de ejemplo, y para probar los pagos conviene usar una app PayPal en modo sandbox. El informe completo del seminario está en `Informe de seminario.docx`.
+Proyecto académico. Los productos y las cuentas son datos de ejemplo, y para probar los pagos conviene usar una app PayPal en modo sandbox. El informe completo del seminario está en [`docs/informe-seminario.pdf`](docs/informe-seminario.pdf).
 
 ## Licencia
 
-La información sobre la licencia y las condiciones de uso se incorporará más adelante.
+[MIT](LICENSE).
