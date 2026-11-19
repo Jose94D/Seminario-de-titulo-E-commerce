@@ -8,7 +8,9 @@ Tienda online para un local de tuning y accesorios automotrices de Linares, Chil
 
 Está hecha con el stack **MERN**: una API en **Express** sobre **MongoDB**, y dos aplicaciones **React** con **Redux** (la tienda y el panel).
 
-> **Estado:** proyecto de **seminario de título** presentado en 2023. Se publica como respaldo y punto de partida para mejoras; las dependencias todavía son de esa época.
+> **Versión de tesis (2023), congelada.** Esta rama conserva el proyecto de **seminario de título** tal como se presentó en 2023, con lo mínimo para publicarlo (credenciales fuera del código y este README). No recibe cambios.
+>
+> **Versión nueva:** la versión 2, con optimizaciones, correcciones de seguridad y rediseño, está en la rama [`main`](../../tree/main).
 
 ## Capturas
 
