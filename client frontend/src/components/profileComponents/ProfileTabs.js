@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Message from "../LoadingError/Error";
-import Toast from "./../LoadingError/Toast";
-import Loading from "./../LoadingError/Loading";
-import { toast } from "react-toastify";
+import Loading from "../LoadingError/Loading";
 import { updateUserProfile } from "../../Redux/Actions/userActions";
 
+// Formulario "Mis datos" del perfil.
 const ProfileTabs = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -14,137 +13,64 @@ const ProfileTabs = () => {
   const [telefono, setTelefono] = useState("");
   const [direccion, setDireccion] = useState("");
   const [rut, setRut] = useState("");
-  const toastId = React.useRef(null);
-
-  const Toastobjects = {
-    pauseOnFocusLoss: false,
-    draggable: false,
-    pauseOnHover: false,
-    autoClose: 2000,
-  };
+  const [notice, setNotice] = useState(null);
 
   const dispatch = useDispatch();
-
-  const userDetails = useSelector((state) => state.userDetails);
-  const { loading, error, user } = userDetails;
-
-  const userUpdateProfile = useSelector((state) => state.userUpdateProfile);
-  const { loading: updateLoading } = userUpdateProfile;
+  const { loading, error, user } = useSelector((state) => state.userDetails);
+  const { loading: updateLoading, error: updateError } = useSelector((state) => state.userUpdateProfile);
 
   useEffect(() => {
     if (user) {
-      setName(user.name);
-      setEmail(user.email);
-      setTelefono(user.telefono);
-      setDireccion(user.direccion);
-      setRut(user.rut);
+      setName(user.name || "");
+      setEmail(user.email || "");
+      setTelefono(user.telefono || "");
+      setDireccion(user.direccion || "");
+      setRut(user.rut || "");
     }
-  }, [dispatch, user]);
+  }, [user]);
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
-    // Password match
     if (password !== confirmPassword) {
-      if (!toast.isActive(toastId.current)) {
-        toastId.current = toast.error("Password does not match", Toastobjects);
-      }
-    } else {
-      dispatch(updateUserProfile({ id: user._id, name, email, password }));
-      if (!toast.isActive(toastId.current)) {
-        toastId.current = toast.success("Profile Updated", Toastobjects);
-      }
+      setNotice({ kind: "error", text: "Las contraseñas no coinciden." });
+      return;
     }
+    await dispatch(updateUserProfile({ id: user._id, name, email, password, telefono, direccion, rut }));
+    setPassword("");
+    setConfirmPassword("");
+    setNotice({ kind: "ok", text: "Tus datos fueron actualizados." });
   };
+
+  const input = (label, value, set, props = {}) => (
+    <label className={`field ${props.wide ? "span-all" : ""}`}>
+      {label}
+      <input className="input-x" value={value} onChange={(e) => set(e.target.value)} {...props.attrs} />
+    </label>
+  );
+
   return (
-    <>
-      <Toast />
-      {error && <Message variant="alert-danger">{error}</Message>}
-      {loading && <Loading />}
-      {updateLoading && <Loading />}
-      <form className="row  form-container" onSubmit={submitHandler}>
-      <div className="col-md-6">
-          <div className="form">
-            <label for="account-confirm-pass">Rut</label>
-            <input
-              className="form-control"
-              type="text"
-              value={rut}
-              onChange={(e) => setRut(e.target.value)}
-            />
-          </div>
-        </div>
-        <div className="col-md-6">
-          <div className="form">
-            <label for="account-fn">Nombre de usuario</label>
-            <input
-              className="form-control"
-              type="text"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
-        </div>
-        <div className="col-md-6">
-          <div className="form">
-            <label for="account-email">Correo electrónico</label>
-            <input
-              className="form-control"
-              type="email"
-              value={email}
-              required
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-        </div>
-        <div className="col-md-6">
-          <div className="form">
-            <label for="account-confirm-pass">Teléfono</label>
-            <input
-              className="form-control"
-              type="text"
-              value={telefono}
-              onChange={(e) => setTelefono(e.target.value)}
-            />
-          </div>
-        </div>       
-        <div className="col-md-6">
-          <div className="form">
-            <label for="account-pass">Contraseña nueva</label>
-            <input
-              className="form-control"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-        </div>
-        <div className="col-md-6">
-          <div className="form">
-            <label for="account-confirm-pass">Confirmar contraseña</label>
-            <input
-              className="form-control"
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-          </div>
-        </div>
-        <div className="col-md-12">
-          <div className="form">
-            <label for="account-confirm-pass">Dirección</label>
-            <input
-              className="form-control"
-              type="text"
-              value={direccion}
-              onChange={(e) => setDireccion(e.target.value)}
-            />
-          </div>
-        </div>
-        
-        <button type="submit">Actualizar perfil</button>
-      </form>
-    </>
+    <form className="card-white" onSubmit={submitHandler} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+      {(loading || updateLoading) && <Loading />}
+      {error && <Message variant="error">{error}</Message>}
+      {updateError && <Message variant="error">{updateError}</Message>}
+      {notice && !updateError && <Message variant={notice.kind}>{notice.text}</Message>}
+      <div className="form-grid">
+        {input("Nombre", name, setName, { attrs: { required: true, autoComplete: "name" } })}
+        {input("RUT", rut, setRut)}
+        {input("Correo", email, setEmail, { attrs: { type: "email", required: true, autoComplete: "email" } })}
+        {input("Teléfono", telefono, setTelefono, { attrs: { type: "tel", autoComplete: "tel" } })}
+        {input("Dirección", direccion, setDireccion, { wide: true, attrs: { autoComplete: "street-address" } })}
+        {input("Contraseña nueva", password, setPassword, { attrs: { type: "password", autoComplete: "new-password" } })}
+        {input("Confirmar contraseña", confirmPassword, setConfirmPassword, {
+          attrs: { type: "password", autoComplete: "new-password" },
+        })}
+      </div>
+      <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        <button type="submit" className="btn-x lg btn-dark-x" disabled={updateLoading}>
+          Guardar cambios
+        </button>
+      </div>
+    </form>
   );
 };
 

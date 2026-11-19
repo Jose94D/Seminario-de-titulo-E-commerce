@@ -1,26 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import Layout from "../components/Layout";
 import Message from "../components/LoadingError/Error";
-import Loading from "../components/LoadingError/Loading";
-import Header from "./../components/Header";
-import { login } from "./../Redux/Actions/userActions";
+import { login } from "../Redux/Actions/userActions";
 
 const Login = ({ location, history }) => {
-  window.scrollTo(0, 0);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const dispatch = useDispatch();
-  const redirect = location.search ? location.search.split("=")[1] : "/";
-
-  const userLogin = useSelector((state) => state.userLogin);
-  const { error, loading, userInfo } = userLogin;
+  const redirect = new URLSearchParams(location.search).get("redirect") || "/";
+  const { error, loading, userInfo } = useSelector((state) => state.userLogin);
 
   useEffect(() => {
-    if (userInfo) {
-      history.push(redirect);
-    }
+    if (userInfo) history.push(redirect.startsWith("/") ? redirect : `/${redirect}`);
   }, [userInfo, history, redirect]);
 
   const submitHandler = (e) => {
@@ -29,38 +22,41 @@ const Login = ({ location, history }) => {
   };
 
   return (
-    <>
-      <Header />
-      <div className="container d-flex flex-column justify-content-center align-items-center login-center">
-        {error && <Message variant="alert-danger">{error}</Message>}
-        {loading && <Loading />}
-        <form
-          className="Login col-md-8 col-lg-4 col-11"
-          onSubmit={submitHandler}
-        >
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <button type="submit">Iniciar sesión</button>
-          <p>
-            <Link
-              to={redirect ? `/register?redirect=${redirect}` : "/register"}
-            >
-              Crear cuenta
+    <Layout title="Iniciar sesión">
+      <section className="auth wrap">
+        <form className="auth-card" onSubmit={submitHandler}>
+          <p className="eyebrow" style={{ marginBottom: 0 }}>
+            Tu cuenta
+          </p>
+          <h1 className="display display-md">Inicia sesión</h1>
+          {error && <Message variant="error">{error === "Invalid Email or Password" ? "Correo o contraseña incorrectos." : error}</Message>}
+          <label className="field">
+            Correo
+            <input className="input-x" type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          </label>
+          <label className="field">
+            Contraseña
+            <input
+              className="input-x"
+              type="password"
+              required
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </label>
+          <button type="submit" className="btn-x lg btn-dark-x" disabled={loading}>
+            {loading ? "Entrando…" : "Iniciar sesión"}
+          </button>
+          <p style={{ margin: 0, textAlign: "center" }} className="muted">
+            ¿No tienes cuenta?{" "}
+            <Link to={`/register?redirect=${redirect}`} style={{ fontWeight: 600 }}>
+              Créala aquí
             </Link>
           </p>
         </form>
-      </div>
-    </>
+      </section>
+    </Layout>
   );
 };
 

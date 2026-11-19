@@ -1,112 +1,66 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Header from "../components/Header";
+import Layout from "../components/Layout";
 import ProfileTabs from "../components/profileComponents/ProfileTabs";
-import { getUserDetails } from "../Redux/Actions/userActions";
-import Orders from "./../components/profileComponents/Orders";
-import moment from "moment";
+import Orders from "../components/profileComponents/Orders";
+import { getUserDetails, logout } from "../Redux/Actions/userActions";
 import { listMyOrders } from "../Redux/Actions/OrderActions";
 
 const ProfileScreen = () => {
-  window.scrollTo(0, 0);
-
+  const [tab, setTab] = useState("pedidos");
   const dispatch = useDispatch();
-
-  const userLogin = useSelector((state) => state.userLogin);
-  const { userInfo } = userLogin;
-  const orderListMy = useSelector((state) => state.orderListMy);
-  const { loading, error, orders } = orderListMy;
+  const { userInfo } = useSelector((state) => state.userLogin);
+  const { loading, error, orders } = useSelector((state) => state.orderListMy);
 
   useEffect(() => {
     dispatch(listMyOrders());
     dispatch(getUserDetails("profile"));
   }, [dispatch]);
 
-  return (
-    <>
-      <Header />
-      <div className="container mt-lg-5 mt-3">
-        <div className="row align-items-start">
-          <div className="col-lg-4 p-0 shadow ">
-            <div className="author-card pb-0 pb-md-3">
-              <div className="author-card-cover"></div>
-              <div className="author-card-profile row">
-                <div className="author-card-avatar col-md-5">
-                  <img src="./images/user.webp" alt="userprofileimage" />
-                </div>
-                <div className="author-card-details col-md-7">
-                  <h5 className="author-card-name mb-2">
-                    <strong>{userInfo.name}</strong>
-                  </h5>
-                  <span className="author-card-position">
-                    <>Se unio el {moment(userInfo.createdAt).format("LL")}</>
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div className="wizard pt-3 ">
-              <div class="d-flex align-items-start">
-                <div
-                  class="nav align-items-start flex-column col-12 nav-pills me-3 "
-                  id="v-pills-tab"
-                  role="tablist"
-                  aria-orientation="vertical"
-                >
-                  <button
-                    class="nav-link active"
-                    id="v-pills-home-tab"
-                    data-bs-toggle="pill"
-                    data-bs-target="#v-pills-home"
-                    type="button"
-                    role="tab"
-                    aria-controls="v-pills-home"
-                    aria-selected="true"
-                  >
-                    Configuraciones de perfil
-                  </button>
-                  <button
-                    class="nav-link d-flex justify-content-between"
-                    id="v-pills-profile-tab"
-                    data-bs-toggle="pill"
-                    data-bs-target="#v-pills-profile"
-                    type="button"
-                    role="tab"
-                    aria-controls="v-pills-profile"
-                    aria-selected="false"
-                  >
-                    Lista de compras
-                    <span className="badge2">{orders ? orders.length : 0}</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+  if (!userInfo) return null;
 
-          {/* panels */}
-          <div
-            class="tab-content col-lg-8 pb-5 pt-lg-0 pt-3"
-            id="v-pills-tabContent"
-          >
-            <div
-              class="tab-pane fade show active"
-              id="v-pills-home"
-              role="tabpanel"
-              aria-labelledby="v-pills-home-tab"
-            >
-              <ProfileTabs />
+  return (
+    <Layout title="Mi cuenta">
+      <section className="account wrap">
+        <aside className="account-aside">
+          <div className="card-dark">
+            <div className="avatar" aria-hidden="true">
+              {userInfo.name.charAt(0).toUpperCase()}
             </div>
-            <div
-              class="tab-pane fade"
-              id="v-pills-profile"
-              role="tabpanel"
-              aria-labelledby="v-pills-profile-tab"
-            >
-              <Orders orders={orders} loading={loading} error={error} />
+            <div className="display display-sm" style={{ marginTop: 18, fontSize: 26 }}>
+              {userInfo.name}
             </div>
+            <div style={{ marginTop: 6, color: "var(--line)", fontSize: 15 }}>{userInfo.email}</div>
           </div>
+          <div className="tabs-x" role="tablist" aria-label="Secciones de la cuenta">
+            <button type="button" role="tab" aria-selected={tab === "pedidos"} onClick={() => setTab("pedidos")}>
+              Mis pedidos
+              <span className="pill pill-wait">{orders ? orders.length : 0}</span>
+            </button>
+            <button type="button" role="tab" aria-selected={tab === "datos"} onClick={() => setTab("datos")}>
+              Mis datos
+            </button>
+            <button type="button" onClick={() => dispatch(logout())}>
+              Cerrar sesión
+            </button>
+          </div>
+        </aside>
+
+        <div className="account-main" role="tabpanel">
+          {tab === "pedidos" ? (
+            <>
+              <h1 className="display display-lg">Mis pedidos</h1>
+              <Orders orders={orders} loading={loading} error={error} />
+            </>
+          ) : (
+            <>
+              <h1 className="display display-lg">Mis datos</h1>
+              <ProfileTabs />
+            </>
+          )}
         </div>
-      </div>
-    </>
+      </section>
+    </Layout>
   );
 };
 

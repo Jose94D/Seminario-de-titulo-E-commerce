@@ -1,28 +1,24 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Header from "./../components/Header";
+import Layout from "../components/Layout";
 
-const NotFound = () => {
-  return (
-    <>
-      <Header />
-      <div className="container my-5">
-        <div className="row justify-content-center align-items-center">
-          <h4 className="text-center mb-2 mb-sm-5">Pagina no encontrada</h4>
-          <img
-            style={{ width: "100%", height: "300px", objectFit: "contain" }}
-            src="/images/not-found.webp"
-            alt="Not-found"
-          />
-          <button className="col-md-3 col-sm-6 col-12 btn btn-success mt-5">
-            <Link to="/" className="text-white text-decoration-none">
-              Inicio
-            </Link>
-          </button>
-        </div>
+const NotFound = () => (
+  <Layout title="Página no encontrada">
+    <section className="auth wrap">
+      <div className="auth-card" style={{ textAlign: "center", alignItems: "center" }}>
+        <p className="eyebrow" style={{ marginBottom: 0 }}>
+          Error 404
+        </p>
+        <h1 className="display display-md">Esta página no existe</h1>
+        <p className="muted" style={{ margin: 0 }}>
+          Puede que el enlace esté mal escrito o que el producto ya no esté disponible.
+        </p>
+        <Link to="/" className="btn-x lg btn-dark-x">
+          Volver al inicio
+        </Link>
       </div>
-    </>
-  );
-};
+    </section>
+  </Layout>
+);
 
 export default NotFound;

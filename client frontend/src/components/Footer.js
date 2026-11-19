@@ -1,14 +1,16 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <div className="footer">
-      <div className="row">
-        <div className="justify-content-center d-flex">
-          <p style={{color: "white"}}>©Seminario de título por Jose Dinamarca</p>
-        </div>
-      </div>
-    </div>
+    <footer className="site-footer wrap">
+      <span>Tuning Shop Linares · Brasil #0196, Linares · Proyecto de seminario de título</span>
+      <nav aria-label="Información del local">
+        <Link to="/horario">Horario</Link>
+        <Link to="/ubicacion">Ubicación</Link>
+        <Link to="/sobre_nosotros">Sobre nosotros</Link>
+      </nav>
+    </footer>
   );
 };
 

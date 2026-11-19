@@ -1,39 +1,40 @@
 import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Header from "./../components/Header";
-import Footer from "./../components/Footer";
+import { Link } from "react-router-dom";
+import Layout from "../components/Layout";
 
-const Horario = () => {
-  window.scrollTo(0, 0);
-  return (
-    <div>
-      <Header />
-      <br></br>
-      <div className="justify-content-center d-flex">
-        <div className="col-md-4 contact-Box">
-          <div className="box-info">
-            <div className="info-image">
-              <FontAwesomeIcon icon="fa-solid fa-clock" />
-            </div>
-            <h5>Horarios de atención</h5>
-            <div className="justify-content-center d-flex">
-              <text>
-                Lunes 10:00 - 18:00<br></br>
-                Martes 10:00 - 18:00<br></br>
-                Miércoles 10:00 - 18:00<br></br>
-                Jueves 10:00 - 18:00<br></br>
-                Viernes 10:00 - 18:00<br></br>
-                Sábado 09:30 - 14:00<br></br>
-                Domingo CERRADO
-              </text>
-            </div>
-          </div>
-        </div>
+const HORARIO = [
+  ["Lunes", "10:00 – 18:00"],
+  ["Martes", "10:00 – 18:00"],
+  ["Miércoles", "10:00 – 18:00"],
+  ["Jueves", "10:00 – 18:00"],
+  ["Viernes", "10:00 – 18:00"],
+  ["Sábado", "09:30 – 14:00"],
+  ["Domingo", "Cerrado"],
+];
+
+const Horario = () => (
+  <Layout title="Horario">
+    <section className="info-page wrap">
+      <div>
+        <p className="eyebrow">El local</p>
+        <h1 className="display display-xl">Horario de atención</h1>
+        <p className="lead">Compra en línea a cualquier hora y retira tu pedido en el local dentro de este horario.</p>
+        <Link to="/ubicacion" className="btn-x lg btn-outline-x" style={{ marginTop: 16 }}>
+          Cómo llegar
+        </Link>
       </div>
-      <br></br>
-      <Footer />
-    </div>
-  );
-};
+      <div className="card-white">
+        <dl className="hours">
+          {HORARIO.map(([dia, horas]) => (
+            <div key={dia}>
+              <dt>{dia}</dt>
+              <dd className={horas === "Cerrado" ? "muted" : ""}>{horas}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    </section>
+  </Layout>
+);
 
 export default Horario;

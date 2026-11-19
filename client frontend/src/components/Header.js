@@ -1,240 +1,85 @@
 import React, { useState } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { Link, NavLink, useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../Redux/Actions/userActions";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { CATEGORIES } from "../format";
 
 const Header = () => {
-  const [keyword, setKeyword] = useState();
+  const [keyword, setKeyword] = useState("");
   const dispatch = useDispatch();
-  let history = useHistory();
+  const history = useHistory();
 
-  const cart = useSelector((state) => state.cart);
-  const { cartItems } = cart;
-  const userLogin = useSelector((state) => state.userLogin);
-  const { userInfo } = userLogin;
-
-  const logoutHandler = () => {
-    dispatch(logout());
-  };
+  const { cartItems } = useSelector((state) => state.cart);
+  const { userInfo } = useSelector((state) => state.userLogin);
+  const cartCount = cartItems.reduce((n, item) => n + Number(item.qty), 0);
 
   const submitHandler = (e) => {
     e.preventDefault();
-    if (keyword.trim()) {
-      history.push(`/search/${keyword}`);
-    } else {
-      history.push("/");
-    }
+    history.push(keyword.trim() ? `/search/${encodeURIComponent(keyword.trim())}` : "/");
   };
+
   return (
-    <div>
-      {/* Top Header */}
-      <div className="Announcement ">
-        <div className="container">
-          <div className="row">
-            <div className="col-md-6 d-flex align-items-center display-none">
-              <p>
-                <FontAwesomeIcon icon="fa-solid fa-square-phone" /> +569 9984
-                5665
-              </p>
-            </div>
-            <div className=" col-12 col-lg-6 justify-content-center justify-content-lg-end d-flex align-items-center">
-              <a
-                href="https://www.facebook.com/tuningshoplinares"
-                target="_blank"
-              >
-                <FontAwesomeIcon icon="fa-brands fa-square-facebook" />
-              </a>
-              <a
-                href="https://www.instagram.com/tuninglinares/"
-                target="_blank"
-              >
-                <FontAwesomeIcon icon="fa-brands fa-square-instagram" />
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
+    <header className="site-header wrap">
+      <Link to="/" className="brand">
+        TUNING SHOP<span> · </span>LINARES
+      </Link>
 
-      {/* Header */}
-      <div className="header">
-        <div className="container">
-          {/* MOBILE HEADER */}
-          <div className="mobile-header">
-            <div className="container ">
-              <div className="row ">
-                <div className="col-6 d-flex align-items-center">
-                  <Link className="navbar-brand" to="/">
-                    <img alt="logo" src="/images/logo.webp" />
-                  </Link>
-                </div>
-                <div className="col-6 d-flex align-items-center justify-content-end Login-Register">
-                  {userInfo ? (
-                    <div className="btn-group">
-                      <button
-                        type="button"
-                        className="name-button dropdown-toggle"
-                        data-bs-toggle="dropdown"
-                        aria-haspopup="true"
-                        aria-expanded="false"
-                      >
-                        <i class="fas fa-user"></i>
-                      </button>
-                      <div className="dropdown-menu">
-                        <Link className="dropdown-item" to="/profile">
-                          Perfil
-                        </Link>
+      <nav className="main-nav" aria-label="Categorías">
+        {CATEGORIES.map((c) => (
+          <NavLink key={c.slug} to={`/categoria/${c.slug}`} activeClassName="active">
+            {c.name}
+          </NavLink>
+        ))}
+        <NavLink to="/sobre_nosotros" activeClassName="active">
+          Sobre nosotros
+        </NavLink>
+      </nav>
 
-                        <Link
-                          className="dropdown-item"
-                          to="#"
-                          onClick={logoutHandler}
-                        >
-                          Cerrar sesión
-                        </Link>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="btn-group">
-                      <button
-                        type="button"
-                        className="name-button dropdown-toggle"
-                        data-bs-toggle="dropdown"
-                        aria-haspopup="true"
-                        aria-expanded="false"
-                      >
-                        <FontAwesomeIcon icon="fa-solid fa-user" />
-                      </button>
-                      <div className="dropdown-menu">
-                        <Link className="dropdown-item" to="/login">
-                          inicia sesión
-                        </Link>
+      <div className="header-tools">
+        <form className="search-x" role="search" onSubmit={submitHandler}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" />
+            <path d="M20 20l-3.5-3.5" />
+          </svg>
+          <input
+            type="search"
+            placeholder="Busca batería, aceite, LED…"
+            aria-label="Buscar productos"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+          />
+          <button type="submit">Buscar</button>
+        </form>
 
-                        <Link className="dropdown-item" to="/register">
-                          Crea tu cuenta
-                        </Link>
-                      </div>
-                    </div>
-                  )}
-
-                  <Link to="/cart" className="cart-mobile-icon">
-                    <FontAwesomeIcon icon="fa-solid fa-cart-shopping" />
-                    <span className="badge">{cartItems.length}</span>
-                  </Link>
-                </div>
-                <div className="col-12 d-flex align-items-center">
-                  <form onSubmit={submitHandler} className="input-group">
-                    <input
-                      type="search"
-                      className="form-control rounded search"
-                      placeholder="Buscar..."
-                      onChange={(e) => setKeyword(e.target.value)}
-                    />
-                    <button type="submit" className="search-button">
-                      Buscar
-                    </button>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* PC HEADER */}
-          <div className="pc-header">
-            <div className="row">
-              <div className="col-md-3 col-4 d-flex align-items-center">
-                <Link className="navbar-brand" to="/">
-                  <img alt="logo" src="/images/logo.webp" />
+        {userInfo ? (
+          <div className="dropdown">
+            <button type="button" className="account-btn dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+              Hola, {userInfo.name.split(" ")[0]}
+            </button>
+            <ul className="dropdown-menu dropdown-menu-end">
+              <li>
+                <Link className="dropdown-item" to="/profile">
+                  Mi cuenta y pedidos
                 </Link>
-              </div>
-              <div className="col-md-6 col-8 d-flex align-items-center">
-                <form onSubmit={submitHandler} className="input-group">
-                  <input
-                    type="search"
-                    className="form-control rounded search"
-                    placeholder="Buscar..."
-                    onChange={(e) => setKeyword(e.target.value)}
-                  />
-                  <button type="submit" className="search-button">
-                    Buscar
-                  </button>
-                </form>
-              </div>
-              <div className="col-md-3 d-flex align-items-center justify-content-end Login-Register">
-                {userInfo ? (
-                  <div className="btn-group">
-                    <button
-                      type="button"
-                      className="name-button dropdown-toggle"
-                      data-bs-toggle="dropdown"
-                      aria-haspopup="true"
-                      aria-expanded="false"
-                    >
-                      Bienvenido, {userInfo.name}
-                    </button>
-                    <div className="dropdown-menu">
-                      <Link className="dropdown-item" to="/profile">
-                        Perfil
-                      </Link>
-
-                      <Link
-                        className="dropdown-item"
-                        to="#"
-                        onClick={logoutHandler}
-                      >
-                        Cerrar sesión
-                      </Link>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <Link to="/register">Crea tu cuenta</Link>
-                    <Link to="/login">Inicia sesión</Link>
-                  </>
-                )}
-
-                <Link to="/cart">
-                  <FontAwesomeIcon icon="fa-solid fa-cart-shopping" />
-                  <span className="badge">{cartItems.length}</span>
-                </Link>
-              </div>
-            </div>
+              </li>
+              <li>
+                <button type="button" className="dropdown-item" onClick={() => dispatch(logout())}>
+                  Cerrar sesión
+                </button>
+              </li>
+            </ul>
           </div>
-        </div>
-      </div>
+        ) : (
+          <Link to="/login" className="account-btn">
+            Iniciar sesión
+          </Link>
+        )}
 
-      {/* Nav Header */}
-      <div className="nav">
-        <div className="container">
-          <div className="row">
-            <div className="col-md-3 d-flex align-items-center display-none">
-              <Link to="/" style={{ color: "white" }}>
-                {" "}
-                Inicio{" "}
-              </Link>
-            </div>
-            <div className="col-md-3 d-flex align-items-center display-none">
-              <Link to="/sobre_nosotros" style={{ color: "white" }}>
-                {" "}
-                Sobre nosotros{" "}
-              </Link>
-            </div>
-            <div className="col-md-3 d-flex align-items-center display-none">
-              <Link to="/horario" style={{ color: "white" }}>
-                {" "}
-                Horarios{" "}
-              </Link>
-            </div>
-            <div className="col-md-3 d-flex align-items-center display-none">
-              <Link to="/ubicacion" style={{ color: "white" }}>
-                {" "}
-                Donde encontrarnos{" "}
-              </Link>
-            </div>
-          </div>
-        </div>
+        <Link to="/cart" className="cart-btn" aria-label={`Carro, ${cartCount} productos`}>
+          Carro <span className="cart-count">{cartCount}</span>
+        </Link>
       </div>
-    </div>
+    </header>
   );
 };
 

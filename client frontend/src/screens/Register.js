@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import Layout from "../components/Layout";
 import Message from "../components/LoadingError/Error";
-import Loading from "../components/LoadingError/Loading";
 import { register } from "../Redux/Actions/userActions";
-import Header from "./../components/Header";
 
 const Register = ({ location, history }) => {
-  //window.scrollTo(0, 0);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,15 +14,11 @@ const Register = ({ location, history }) => {
   const [rut, setRut] = useState("");
 
   const dispatch = useDispatch();
-  const redirect = location.search ? location.search.split("=")[1] : "/";
-
-  const userRegister = useSelector((state) => state.userRegister);
-  const { error, loading, userInfo } = userRegister;
+  const redirect = new URLSearchParams(location.search).get("redirect") || "/";
+  const { error, loading, userInfo } = useSelector((state) => state.userRegister);
 
   useEffect(() => {
-    if (userInfo) {
-      history.push(redirect);
-    }
+    if (userInfo) history.push(redirect.startsWith("/") ? redirect : `/${redirect}`);
   }, [userInfo, history, redirect]);
 
   const submitHandler = (e) => {
@@ -32,63 +26,45 @@ const Register = ({ location, history }) => {
     dispatch(register(name, email, password, telefono, direccion, rut));
   };
 
+  const field = (label, value, set, attrs = {}, wide = false) => (
+    <label className={`field ${wide ? "span-all" : ""}`}>
+      {label}
+      <input className="input-x" value={value} onChange={(e) => set(e.target.value)} {...attrs} />
+    </label>
+  );
+
   return (
-    <>
-      <Header />
-      <div className="container d-flex flex-column justify-content-center align-items-center login-center">
-        {error && <Message variant="alert-danger">{error}</Message>}
-        {loading && <Loading />}
-
-        <form
-          className="Login col-md-8 col-lg-4 col-11"
-          onSubmit={submitHandler}
-        >
-          <input
-            type="text"
-            placeholder="RUT"
-            value={rut}
-            onChange={(e) => setRut(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Nombre de usuario"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <input
-            type="email"
-            placeholder="Correo electrónico"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Teléfono"
-            value={telefono}
-            onChange={(e) => setTelefono(e.target.value)}
-          />
-          <input
-            type="text"
-            placeholder="Dirección"
-            value={direccion}
-            onChange={(e) => setDireccion(e.target.value)}
-          />
-
-          <button type="submit">Registrar</button>
-          <p>
-            <Link to={redirect ? `/login?redirect=${redirect}` : "/login"}>
-              Ya tengo una cuenta <strong>Login</strong>
+    <Layout title="Crear cuenta">
+      <section className="auth wrap">
+        <form className="auth-card wide" onSubmit={submitHandler}>
+          <p className="eyebrow" style={{ marginBottom: 0 }}>
+            Tu cuenta
+          </p>
+          <h1 className="display display-md">Crea tu cuenta</h1>
+          <p className="muted" style={{ margin: 0 }}>
+            Para comprar y seguir tus pedidos.
+          </p>
+          {error && <Message variant="error">{error === "User already exists" ? "Ya existe una cuenta con ese correo." : error}</Message>}
+          <div className="form-grid">
+            {field("Nombre", name, setName, { required: true, autoComplete: "name" })}
+            {field("RUT", rut, setRut, { placeholder: "12.345.678-9" })}
+            {field("Correo", email, setEmail, { type: "email", required: true, autoComplete: "email" })}
+            {field("Teléfono", telefono, setTelefono, { type: "tel", autoComplete: "tel" })}
+            {field("Dirección", direccion, setDireccion, { autoComplete: "street-address" }, true)}
+            {field("Contraseña", password, setPassword, { type: "password", required: true, autoComplete: "new-password" }, true)}
+          </div>
+          <button type="submit" className="btn-x lg btn-primary-x" disabled={loading}>
+            {loading ? "Creando cuenta…" : "Crear cuenta"}
+          </button>
+          <p style={{ margin: 0, textAlign: "center" }} className="muted">
+            ¿Ya tienes cuenta?{" "}
+            <Link to={`/login?redirect=${redirect}`} style={{ fontWeight: 600 }}>
+              Inicia sesión
             </Link>
           </p>
         </form>
-      </div>
-    </>
+      </section>
+    </Layout>
   );
 };
 

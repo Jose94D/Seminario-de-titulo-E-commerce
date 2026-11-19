@@ -1,7 +1,5 @@
 import React from "react";
-import "./App.css";
-import "./responsive.css";
-import "react-toastify/dist/ReactToastify.css";
+import "./theme.css";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import HomeScreen from "./screens/HomeScreen";
 import SingleProduct from "./screens/SingleProduct";
@@ -26,14 +24,12 @@ const App = () => {
         <Route path="/" component={HomeScreen} exact />
         <Route path="/search/:keyword" component={HomeScreen} exact />
         <Route path="/page/:pagenumber" component={HomeScreen} exact />
+        <Route path="/search/:keyword/page/:pagenumber" component={HomeScreen} exact />
+        <Route path="/categoria/:category" component={HomeScreen} exact />
+        <Route path="/categoria/:category/page/:pagenumber" component={HomeScreen} exact />
         <Route path="/horario" component={Horario} exact />
         <Route path="/ubicacion" component={Ubicacion} exact />
         <Route path="/sobre_nosotros" component={SobreNosotros} exact />
-        <Route
-          path="/search/:keyword/page/:pageNumber"
-          component={HomeScreen}
-          exact
-        />
         <Route path="/products/:id" component={SingleProduct} />
         <Route path="/login" component={Login} />
         <Route path="/register" component={Register} />

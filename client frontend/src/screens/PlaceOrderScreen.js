@@ -1,33 +1,28 @@
 import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import Layout from "../components/Layout";
+import Steps from "../components/Steps";
+import OrderLines from "../components/OrderLines";
+import Message from "../components/LoadingError/Error";
 import { createOrder } from "../Redux/Actions/OrderActions";
 import { ORDER_CREATE_RESET } from "../Redux/Constants/OrderConstants";
-import Header from "./../components/Header";
-import Message from "./../components/LoadingError/Error";
+import { formatPrice } from "../format";
+import { PICKUP_ADDRESS } from "./ShippingScreen";
 
 const PlaceOrderScreen = ({ history }) => {
-  window.scrollTo(0, 0);
-
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart);
-  const userLogin = useSelector((state) => state.userLogin);
-  const { userInfo } = userLogin;
+  const { userInfo } = useSelector((state) => state.userLogin);
+  const { order, success, error, loading } = useSelector((state) => state.orderCreate);
 
-  // Calculate Price
-  const addDecimals = (num) => {
-    return (Math.round(num * 100) / 100).toFixed(0);
-  };
+  const itemsPrice = Math.round(cart.cartItems.reduce((acc, item) => acc + item.price * item.qty, 0));
+  const address = cart.shippingAddress || {};
+  const isPickup = address.address === PICKUP_ADDRESS;
 
-  cart.itemsPrice = addDecimals(
-    cart.cartItems.reduce((acc, item) => acc + item.price * item.qty, 0)
-  );
-  cart.totalPrice = (
-    Number(cart.itemsPrice)
-  ).toFixed(0);
-
-  const orderCreate = useSelector((state) => state.orderCreate);
-  const { order, success, error } = orderCreate;
+  useEffect(() => {
+    if (!address.address) history.replace("/shipping");
+  }, [address.address, history]);
 
   useEffect(() => {
     if (success) {
@@ -40,139 +35,77 @@ const PlaceOrderScreen = ({ history }) => {
     dispatch(
       createOrder({
         orderItems: cart.cartItems,
-        shippingAddress: cart.shippingAddress,
-        paymentMethod: cart.paymentMethod,
-        itemsPrice: cart.itemsPrice,
-        totalPrice: cart.totalPrice,
+        shippingAddress: address,
+        paymentMethod: cart.paymentMethod || "PayPal",
+        itemsPrice,
+        taxPrice: 0,
+        shippingPrice: 0,
+        totalPrice: itemsPrice,
       })
     );
   };
 
   return (
-    <>
-      <Header />
-      <div className="container">
-        <div className="row  order-detail">
-          <div className="col-lg-4 col-sm-4 mb-lg-4 mb-5 mb-sm-0">
-            <div className="row ">
-              <div className="col-md-4 center">
-                <div className="alert-success order-box">
-                  <i class="fas fa-user"></i>
-                </div>
+    <Layout title="Confirmar pedido">
+      <div className="wrap" style={{ paddingTop: 32 }}>
+        <Steps current={2} />
+      </div>
+      <section className="checkout wrap">
+        <div className="checkout-main">
+          <h1 className="display display-lg">Revisa tu pedido</h1>
+
+          <div className="form-grid">
+            <div className="card-x">
+              <h2 className="legend-x">Cliente</h2>
+              <div>{userInfo.name}</div>
+              <div className="muted">{userInfo.email}</div>
+            </div>
+            <div className="card-x">
+              <h2 className="legend-x">Entrega</h2>
+              <div>{isPickup ? "Retiro en el local" : "Despacho a domicilio"}</div>
+              <div className="muted">
+                {isPickup ? "Brasil #0196, Linares" : `${address.address}, ${address.city}`}
               </div>
-              <div className="col-md-8 center">
-                <h5>
-                  <strong>Cliente</strong>
-                </h5>
-                <p>{userInfo.name}</p>
-                <p>{userInfo.email}</p>
-              </div>
+              <Link to="/shipping" style={{ fontSize: 14, fontWeight: 600 }}>
+                Cambiar
+              </Link>
             </div>
           </div>
-          {/* 2 */}
-          <div className="col-lg-4 col-sm-4 mb-lg-4 mb-5 mb-sm-0">
-            <div className="row">
-              <div className="col-md-4 center">
-                <div className="alert-success order-box">
-                  <i className="fas fa-truck-moving"></i>
-                </div>
-              </div>
-              <div className="col-md-8 center">
-                <h5>
-                  <strong>Información de compra</strong>
-                </h5>
-                <p>Método de pago: {cart.paymentMethod}</p>
-              </div>
-            </div>
-          </div>
-          {/* 3 */}
-          <div className="col-lg-4 col-sm-4 mb-lg-4 mb-5 mb-sm-0">
-            <div className="row">
-              <div className="col-md-4 center">
-                <div className="alert-success order-box">
-                  <i className="fas fa-map-marker-alt"></i>
-                </div>
-              </div>
-              <div className="col-md-8 center">
-                <h5>
-                  <strong>Entrega</strong>
-                </h5>
-                <p>
-                  Dirección: {cart.shippingAddress.city},{" "}
-                  {cart.shippingAddress.address},{" "}
-                </p>
-              </div>
-            </div>
-          </div>
+
+          {cart.cartItems.length === 0 ? <Message>Tu carro está vacío.</Message> : <OrderLines items={cart.cartItems} />}
         </div>
 
-        <div className="row order-products justify-content-between">
-          <div className="col-lg-8">
-            {cart.cartItems.length === 0 ? (
-              <Message variant="alert-info mt-5">Tu carro esta vacío</Message>
-            ) : (
-              <>
-                {cart.cartItems.map((item, index) => (
-                  <div className="order-product row" key={index}>
-                    <div className="col-md-3 col-6">
-                      <img src={item.image} alt={item.name} />
-                    </div>
-                    <div className="col-md-5 col-6 d-flex align-items-center">
-                      <Link to={`/products/${item.product}`}>
-                        <h6>{item.name}</h6>
-                      </Link>
-                    </div>
-                    <div className="mt-3 mt-md-0 col-md-2 col-6  d-flex align-items-center flex-column justify-content-center ">
-                      <h4>Cantidad</h4>
-                      <h6>{item.qty}</h6>
-                    </div>
-                    <div className="mt-3 mt-md-0 col-md-2 col-6 align-items-end  d-flex flex-column justify-content-center ">
-                      <h4>Subtotal</h4>
-                      <h6>${item.qty * item.price}</h6>
-                    </div>
-                  </div>
-                ))}
-              </>
-            )}
-          </div>
-          {/* total */}
-          <div className="col-lg-3 d-flex align-items-end flex-column mt-5 subtotal-order">
-            <table className="table table-bordered">
-              <tbody>
-                <tr>
-                  <td>
-                    <strong>Productos</strong>
-                  </td>
-                  <td>${cart.itemsPrice}</td>
-                </tr>
-                <tr>
-                  <td>
-                    <strong>Entrega</strong>
-                  </td>
-                  <td>$0</td>
-                </tr>
-                <tr>
-                  <td>
-                    <strong>Total</strong>
-                  </td>
-                  <td>${cart.totalPrice}</td>
-                </tr>
-              </tbody>
-            </table>
-            {cart.cartItems.length === 0 ? null : (
-              <button type="submit" onClick={placeOrderHandler}>
-                Realizar compra
-              </button>
-            )}
-            {error && (
-              <div className="my-3 col-12">
-                <Message variant="alert-danger">{error}</Message>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </>
+        <aside className="checkout-aside card-dark" aria-label="Resumen">
+          <h2 className="display display-sm">Tu pedido</h2>
+          <dl className="summary">
+            <div>
+              <dt>Productos</dt>
+              <dd>{formatPrice(itemsPrice)}</dd>
+            </div>
+            <div>
+              <dt>Entrega</dt>
+              <dd>{formatPrice(0)}</dd>
+            </div>
+            <div className="total">
+              <dt>Total</dt>
+              <dd>{formatPrice(itemsPrice)}</dd>
+            </div>
+          </dl>
+          {error && <Message variant="error">{error}</Message>}
+          <button
+            type="button"
+            className="btn-x lg btn-primary-x"
+            disabled={cart.cartItems.length === 0 || loading}
+            onClick={placeOrderHandler}
+          >
+            {loading ? "Creando pedido…" : "Confirmar e ir a pagar"}
+          </button>
+          <Link to="/cart" style={{ textAlign: "center", fontSize: 14 }}>
+            Volver al carro
+          </Link>
+        </aside>
+      </section>
+    </Layout>
   );
 };
 
