@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router";
 import { useDispatch } from "react-redux";
-import { addToCart } from "../../Redux/Actions/cartActions";
+import { addToCart } from "../../store/cartSlice";
 import { formatPrice, categoryName } from "../../format";
 
 const ProductCard = ({ product }) => {
@@ -10,7 +10,7 @@ const ProductCard = ({ product }) => {
   const inStock = product.countInStock > 0;
 
   const add = async () => {
-    await dispatch(addToCart(product._id, 1));
+    await dispatch(addToCart({ id: product._id, qty: 1 }));
     setAdded(true);
   };
 

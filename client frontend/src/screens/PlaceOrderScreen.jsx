@@ -5,8 +5,7 @@ import Layout from "../components/Layout";
 import Steps from "../components/Steps";
 import OrderLines from "../components/OrderLines";
 import Message from "../components/LoadingError/Error";
-import { createOrder } from "../Redux/Actions/OrderActions";
-import { ORDER_CREATE_RESET } from "../Redux/Constants/OrderConstants";
+import { createOrder, createReset } from "../store/ordersSlice";
 import { formatPrice } from "../format";
 import { PICKUP_ADDRESS } from "./ShippingScreen";
 
@@ -14,8 +13,8 @@ const PlaceOrderScreen = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart);
-  const { userInfo } = useSelector((state) => state.userLogin);
-  const { order, success, error, loading } = useSelector((state) => state.orderCreate);
+  const { userInfo } = useSelector((state) => state.user);
+  const { order, success, error, loading } = useSelector((state) => state.orders.create);
 
   const itemsPrice = Math.round(cart.cartItems.reduce((acc, item) => acc + item.price * item.qty, 0));
   const address = cart.shippingAddress || {};
@@ -28,7 +27,7 @@ const PlaceOrderScreen = () => {
   useEffect(() => {
     if (success) {
       navigate(`/order/${order._id}`);
-      dispatch({ type: ORDER_CREATE_RESET });
+      dispatch(createReset());
     }
   }, [navigate, dispatch, success, order]);
 

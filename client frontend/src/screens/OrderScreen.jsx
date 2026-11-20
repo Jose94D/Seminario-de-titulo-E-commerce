@@ -8,8 +8,7 @@ import Steps from "../components/Steps";
 import OrderLines from "../components/OrderLines";
 import Loading from "../components/LoadingError/Loading";
 import Message from "../components/LoadingError/Error";
-import { getOrderDetails, payOrder, simulacion } from "../Redux/Actions/OrderActions";
-import { ORDER_PAY_RESET } from "../Redux/Constants/OrderConstants";
+import { getOrderDetails, payOrder, payReset, simulatePayment } from "../store/ordersSlice";
 import { formatPrice, formatDate } from "../format";
 import { PICKUP_ADDRESS } from "./ShippingScreen";
 
@@ -22,12 +21,12 @@ const OrderScreen = () => {
   const orderId = params.id;
   const dispatch = useDispatch();
 
-  const { order, loading, error } = useSelector((state) => state.orderDetails);
-  const { loading: loadingPay, success: successPay } = useSelector((state) => state.orderPay);
+  const { order, loading, error } = useSelector((state) => state.orders.detail);
+  const { loading: loadingPay, success: successPay } = useSelector((state) => state.orders.pay);
 
   useEffect(() => {
     if (!order || order._id !== orderId || successPay) {
-      dispatch({ type: ORDER_PAY_RESET });
+      dispatch(payReset());
       dispatch(getOrderDetails(orderId));
     }
   }, [dispatch, orderId, successPay, order]);
@@ -149,11 +148,14 @@ const OrderScreen = () => {
                           onApprove={async (data, actions) => {
                             const details = await actions.order.capture();
                             dispatch(
-                              payOrder(orderId, {
-                                id: details.id,
-                                status: details.status,
-                                update_time: details.update_time,
-                                email_address: details.payer?.email_address,
+                              payOrder({
+                                orderId,
+                                paymentResult: {
+                                  id: details.id,
+                                  status: details.status,
+                                  update_time: details.update_time,
+                                  email_address: details.payer?.email_address,
+                                },
                               })
                             );
                           }}
@@ -165,7 +167,7 @@ const OrderScreen = () => {
                       </p>
                     )}
                   </div>
-                  <button type="button" className="btn-x btn-on-dark-outline" onClick={() => dispatch(simulacion(order))}>
+                  <button type="button" className="btn-x btn-on-dark-outline" onClick={() => dispatch(simulatePayment(order))}>
                     Simular pago (demo)
                   </button>
                 </>

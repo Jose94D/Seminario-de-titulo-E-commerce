@@ -3,7 +3,7 @@ import { Link, useParams, useLocation, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import Layout from "../components/Layout";
 import Steps from "../components/Steps";
-import { addToCart, removefromcart } from "../Redux/Actions/cartActions";
+import { addToCart, removeFromCart } from "../store/cartSlice";
 import { formatPrice } from "../format";
 
 const CartScreen = () => {
@@ -20,7 +20,7 @@ const CartScreen = () => {
 
   useEffect(() => {
     if (productId) {
-      dispatch(addToCart(productId, qty));
+      dispatch(addToCart({ id: productId, qty }));
       navigate("/cart", { replace: true });
     }
   }, [dispatch, productId, qty, navigate]);
@@ -61,7 +61,7 @@ const CartScreen = () => {
                       Cantidad
                       <select
                         value={item.qty}
-                        onChange={(e) => dispatch(addToCart(item.product, Number(e.target.value)))}
+                        onChange={(e) => dispatch(addToCart({ id: item.product, qty: Number(e.target.value) }))}
                       >
                         {[...Array(Math.max(1, Math.min(item.countInStock, 10))).keys()].map((x) => (
                           <option key={x + 1} value={x + 1}>
@@ -70,7 +70,7 @@ const CartScreen = () => {
                         ))}
                       </select>
                     </label>
-                    <button type="button" className="btn-x btn-ghost-x" onClick={() => dispatch(removefromcart(item.product))}>
+                    <button type="button" className="btn-x btn-ghost-x" onClick={() => dispatch(removeFromCart(item.product))}>
                       Quitar
                     </button>
                   </div>

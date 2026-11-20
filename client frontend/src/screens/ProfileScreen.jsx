@@ -3,14 +3,14 @@ import { useDispatch, useSelector } from "react-redux";
 import Layout from "../components/Layout";
 import ProfileTabs from "../components/profileComponents/ProfileTabs";
 import Orders from "../components/profileComponents/Orders";
-import { getUserDetails, logout } from "../Redux/Actions/userActions";
-import { listMyOrders } from "../Redux/Actions/OrderActions";
+import { getUserDetails, logout } from "../store/userSlice";
+import { listMyOrders } from "../store/ordersSlice";
 
 const ProfileScreen = () => {
   const [tab, setTab] = useState("pedidos");
   const dispatch = useDispatch();
-  const { userInfo } = useSelector((state) => state.userLogin);
-  const { loading, error, orders } = useSelector((state) => state.orderListMy);
+  const { userInfo } = useSelector((state) => state.user);
+  const { loading, error, orders } = useSelector((state) => state.orders.mine);
 
   useEffect(() => {
     dispatch(listMyOrders());

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../Redux/Actions/userActions";
+import { logout } from "../store/userSlice";
 import { CATEGORIES } from "../format";
 
 const Header = () => {
@@ -10,7 +10,7 @@ const Header = () => {
   const navigate = useNavigate();
 
   const { cartItems } = useSelector((state) => state.cart);
-  const { userInfo } = useSelector((state) => state.userLogin);
+  const { userInfo } = useSelector((state) => state.user);
   const cartCount = cartItems.reduce((n, item) => n + Number(item.qty), 0);
 
   const submitHandler = (e) => {

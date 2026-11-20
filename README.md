@@ -102,7 +102,7 @@ Pendiente:
 | API | **Node.js**, **Express 4**, express-async-handler, morgan |
 | Base de datos | **MongoDB Atlas** con **Mongoose 6** |
 | Autenticación | **jsonwebtoken**, **bcryptjs** |
-| Tienda | **React 19**, **Vite**, **Redux Toolkit** (`configureStore`), React Router 7, axios, CSS propio (Archivo + Inter) |
+| Tienda | **React 19**, **Vite**, **Redux Toolkit** (`createSlice`, `createAsyncThunk`), React Router 7, axios, CSS propio (Archivo + Inter) |
 | Panel admin | **React 19**, **Vite**, **Redux Toolkit** (`configureStore`), React Router 7, axios, Bootstrap 5.3 con tema propio |
 | Pagos | @paypal/react-paypal-js (SDK oficial de PayPal) |
 | Extras | Mapa embebido de Google, fechas con `Intl`, react-toastify (panel) |
@@ -181,7 +181,7 @@ erDiagram
 Cada push a `main` corre en GitHub Actions los tests y compila las dos apps.
 
 * **API** (`server/test`, con `node:test`, Supertest y una MongoDB en memoria): login, registro, rutas privadas, token de un usuario eliminado, filtro por categoría y búsqueda, permisos de administrador y acceso a pedidos ajenos; y, en `security.test.js`, CORS, validación de datos, inyección de operadores, precios calculados en la API y límite de intentos.
-* **Tienda** (Vitest y Testing Library): formato de precios en pesos chilenos, carro de compras y tarjeta de producto.
+* **Tienda** (Vitest y Testing Library): formato de precios y fechas, slices de Redux (carro, sesión y cierre por sesión vencida), creación del store y tarjeta de producto.
 
 ```bash
 cd server && npm test
@@ -255,7 +255,7 @@ En producción, `VITE_STORE_URL` define la dirección de la tienda para el enlac
 │   └── src/
 │       ├── screens/        páginas: inicio, producto, carrito, pago, perfil…
 │       ├── components/     header, footer, paginación, reseñas
-│       └── Redux/          actions, reducers, constants y store
+│       └── store/          slices de Redux Toolkit: carro, usuario, productos y pedidos
 ├── dashboard/              panel de administración (React + Redux)
 │   └── src/
 │       ├── screens/        resumen, productos, pedidos, usuarios

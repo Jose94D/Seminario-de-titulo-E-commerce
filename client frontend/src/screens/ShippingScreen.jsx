@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import Layout from "../components/Layout";
 import Steps from "../components/Steps";
-import { saveShippingAddress, savePaymentMethod } from "../Redux/Actions/cartActions";
+import { saveShippingAddress, savePaymentMethod } from "../store/cartSlice";
 import { formatPrice } from "../format";
 
 export const PICKUP_ADDRESS = "Retiro en el local · Brasil #0196";

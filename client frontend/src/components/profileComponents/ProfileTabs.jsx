@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Message from "../LoadingError/Error";
 import Loading from "../LoadingError/Loading";
-import { updateUserProfile } from "../../Redux/Actions/userActions";
+import { updateUserProfile } from "../../store/userSlice";
 
 // Formulario "Mis datos" del perfil.
 const ProfileTabs = () => {
@@ -16,8 +16,8 @@ const ProfileTabs = () => {
   const [notice, setNotice] = useState(null);
 
   const dispatch = useDispatch();
-  const { loading, error, user } = useSelector((state) => state.userDetails);
-  const { loading: updateLoading, error: updateError } = useSelector((state) => state.userUpdateProfile);
+  const { loading, error, user } = useSelector((state) => state.user.profile);
+  const { loading: updateLoading, error: updateError } = useSelector((state) => state.user.update);
 
   useEffect(() => {
     if (user) {
@@ -35,7 +35,13 @@ const ProfileTabs = () => {
       setNotice({ kind: "error", text: "Las contraseñas no coinciden." });
       return;
     }
-    await dispatch(updateUserProfile({ id: user._id, name, email, password, telefono, direccion, rut }));
+    try {
+      // unwrap() lanza si la API rechaza el cambio; el error ya se muestra desde el store
+      await dispatch(updateUserProfile({ id: user._id, name, email, password, telefono, direccion, rut })).unwrap();
+    } catch {
+      setNotice(null);
+      return;
+    }
     setPassword("");
     setConfirmPassword("");
     setNotice({ kind: "ok", text: "Tus datos fueron actualizados." });

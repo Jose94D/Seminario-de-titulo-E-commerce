@@ -5,8 +5,7 @@ import Layout from "../components/Layout";
 import Rating from "../components/homeComponents/Rating";
 import Message from "../components/LoadingError/Error";
 import Loading from "../components/LoadingError/Loading";
-import { createProductReview, listProductDetails } from "../Redux/Actions/ProductActions";
-import { PRODUCT_CREATE_REVIEW_RESET } from "../Redux/Constants/ProductConstants";
+import { createProductReview, listProductDetails, reviewReset } from "../store/productsSlice";
 import { formatPrice, categoryName, formatDate } from "../format";
 
 const SingleProduct = () => {
@@ -20,20 +19,20 @@ const SingleProduct = () => {
   const productId = params.id;
   const dispatch = useDispatch();
 
-  const { loading, error, product } = useSelector((state) => state.productDetails);
-  const { userInfo } = useSelector((state) => state.userLogin);
+  const { loading, error, product } = useSelector((state) => state.products.detail);
+  const { userInfo } = useSelector((state) => state.user);
   const {
     loading: loadingCreateReview,
     error: errorCreateReview,
     success: successCreateReview,
-  } = useSelector((state) => state.productReviewCreate);
+  } = useSelector((state) => state.products.review);
 
   useEffect(() => {
     if (successCreateReview) {
       setReviewSent(true);
       setRating("");
       setComment("");
-      dispatch({ type: PRODUCT_CREATE_REVIEW_RESET });
+      dispatch(reviewReset());
     }
     dispatch(listProductDetails(productId));
   }, [dispatch, productId, successCreateReview]);
@@ -43,7 +42,7 @@ const SingleProduct = () => {
   const submitHandler = (e) => {
     e.preventDefault();
     setReviewSent(false);
-    dispatch(createProductReview(productId, { rating, comment }));
+    dispatch(createProductReview({ productId, review: { rating, comment } }));
   };
 
   const ready = !loading && !error && product && product._id === productId;

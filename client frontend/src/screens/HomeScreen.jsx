@@ -3,8 +3,8 @@ import { Link, NavLink, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import Layout from "../components/Layout";
 import ShopSection from "../components/homeComponents/ShopSection";
-import { listProduct } from "../Redux/Actions/ProductActions";
-import { addToCart } from "../Redux/Actions/cartActions";
+import { listProducts } from "../store/productsSlice";
+import { addToCart } from "../store/cartSlice";
 import { CATEGORIES, categoryName, formatPrice } from "../format";
 
 const tileClass = ["tile-dark", "tile-green", "tile-light"];
@@ -44,7 +44,7 @@ const Featured = ({ product }) => {
             className="btn-x btn-dark-x"
             disabled={product.countInStock === 0 || added}
             onClick={async () => {
-              await dispatch(addToCart(product._id, 1));
+              await dispatch(addToCart({ id: product._id, qty: 1 }));
               setAdded(true);
             }}
           >
@@ -60,11 +60,11 @@ const HomeScreen = () => {
   const params = useParams();
   const { keyword, pagenumber, category } = params;
   const dispatch = useDispatch();
-  const productList = useSelector((state) => state.productList);
+  const productList = useSelector((state) => state.products.list);
   const isLanding = !keyword && !category && !pagenumber;
 
   useEffect(() => {
-    dispatch(listProduct(keyword, pagenumber, category));
+    dispatch(listProducts({ keyword, pageNumber: pagenumber, category }));
   }, [dispatch, keyword, pagenumber, category]);
 
   const products = productList.products || [];

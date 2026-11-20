@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router";
 import Layout from "../components/Layout";
 import Message from "../components/LoadingError/Error";
-import { login } from "../Redux/Actions/userActions";
+import { login } from "../store/userSlice";
 
 const Login = () => {
   const location = useLocation();
@@ -12,7 +12,8 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
   const redirect = new URLSearchParams(location.search).get("redirect") || "/";
-  const { error, loading, userInfo } = useSelector((state) => state.userLogin);
+  const { userInfo } = useSelector((state) => state.user);
+  const { error, loading } = useSelector((state) => state.user.login);
 
   useEffect(() => {
     if (userInfo) navigate(redirect.startsWith("/") ? redirect : `/${redirect}`);
@@ -20,7 +21,7 @@ const Login = () => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    dispatch(login(email, password));
+    dispatch(login({ email, password }));
   };
 
   return (
