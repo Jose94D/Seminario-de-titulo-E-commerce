@@ -1,8 +1,5 @@
 import React from "react";
-import GoogleMaps from "simple-react-google-maps";
 import Layout from "../components/Layout";
-
-const MAPS_KEY = process.env.REACT_APP_GOOGLE_MAPS_KEY;
 
 const Ubicacion = () => (
   <Layout title="Ubicación">
@@ -22,18 +19,14 @@ const Ubicacion = () => (
         </a>
       </div>
       <div className="map-frame">
-        {MAPS_KEY ? (
-          <GoogleMaps
-            apiKey={MAPS_KEY}
-            style={{ height: "420px", width: "100%" }}
-            zoom={17}
-            center={{ lat: -35.85561846828572, lng: -71.5939696916276 }}
-          />
-        ) : (
-          <div style={{ height: "100%", display: "flex", alignItems: "center", justifyContent: "center", padding: 24, textAlign: "center" }} className="muted">
-            El mapa necesita la clave REACT_APP_GOOGLE_MAPS_KEY en el archivo .env.
-          </div>
-        )}
+        {/* Mapa embebido de Google: no necesita API key */}
+        <iframe
+          title="Mapa del local en Brasil #0196, Linares"
+          src="https://maps.google.com/maps?q=-35.85561846828572,-71.5939696916276&z=17&output=embed"
+          style={{ border: 0, width: "100%", height: "420px", display: "block" }}
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+        />
       </div>
     </section>
   </Layout>

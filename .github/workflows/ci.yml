@@ -36,9 +36,7 @@ jobs:
           cache: npm
           cache-dependency-path: client frontend/package-lock.json
       - run: npm ci
-      - run: npm test -- --watchAll=false
-        env:
-          CI: true
+      - run: npm test
       - run: npm run build
         env:
           CI: true

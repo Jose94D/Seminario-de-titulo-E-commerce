@@ -36,7 +36,7 @@ Versión 2, con el rediseño «Taller premium» y el catálogo de ejemplo (produ
 * **Producto:** precio, stock, especificaciones técnicas, valoración y reseñas de los clientes.
 * **Compra:** carro, entrega (retiro en el local o despacho), confirmación y pago con PayPal, con un botón para simular el pago en la demo.
 * **Mi cuenta:** pedidos con su estado y datos del cliente (incluido RUT, teléfono y dirección).
-* **Local:** páginas de horario de atención, ubicación con Google Maps y sobre nosotros.
+* **Local:** páginas de horario de atención, ubicación con un mapa de Google embebido y sobre nosotros.
 
 ### Panel de administración
 
@@ -77,7 +77,7 @@ Lo que tiene:
 * Contraseñas con hash **bcrypt**; nunca se devuelven en las respuestas.
 * Token **JWT** firmado con una clave del `.env`, exigido en las rutas privadas.
 * Las rutas de administración exigen además `isAdmin`.
-* Credenciales (MongoDB, PayPal, JWT, Google Maps) fuera del código, en archivos `.env`.
+* Credenciales (MongoDB, PayPal, JWT) fuera del código, en archivos `.env`.
 * Un pedido solo lo ve o lo marca como pagado su dueño o un administrador; a los demás la API responde 404, sin revelar que existe.
 * Marcar un pedido como entregado es exclusivo de administradores.
 * Las rutas `/api/import`, que reemplazan usuarios y productos con los de ejemplo, solo existen cuando `NODE_ENV` no es `production`.
@@ -102,10 +102,11 @@ Pendiente:
 | API | **Node.js**, **Express 4**, express-async-handler, morgan |
 | Base de datos | **MongoDB Atlas** con **Mongoose 6** |
 | Autenticación | **jsonwebtoken**, **bcryptjs** |
-| Tienda | **React 17**, **Redux** + redux-thunk, React Router 5, axios, CSS propio (Archivo + Inter) |
-| Panel admin | **React 17**, **Redux** + redux-thunk, React Router 5, axios, Bootstrap 5.3 con tema propio |
+| Tienda | **React 17**, **Vite**, **Redux** + redux-thunk, React Router 5, axios, CSS propio (Archivo + Inter) |
+| Panel admin | **React 17**, **Vite**, **Redux** + redux-thunk, React Router 5, axios, Bootstrap 5.3 con tema propio |
 | Pagos | react-paypal-button-v2 (PayPal) |
-| Extras | Google Maps, react-toastify (panel) |
+| Extras | Mapa embebido de Google, react-toastify (panel) |
+| Tests | node:test + Supertest (API), Vitest + Testing Library (tienda), GitHub Actions |
 
 ```text
  Cliente  ───► Tienda React  (:3000) ──┐
@@ -180,7 +181,7 @@ erDiagram
 Cada push a `main` corre en GitHub Actions los tests y compila las dos apps.
 
 * **API** (`server/test`, con `node:test`, Supertest y una MongoDB en memoria): login, registro, rutas privadas, token de un usuario eliminado, filtro por categoría y búsqueda, permisos de administrador y acceso a pedidos ajenos; y, en `security.test.js`, CORS, validación de datos, inyección de operadores, precios calculados en la API y límite de intentos.
-* **Tienda** (Jest y Testing Library): formato de precios en pesos chilenos, carro de compras y tarjeta de producto.
+* **Tienda** (Vitest y Testing Library): formato de precios en pesos chilenos, carro de compras y tarjeta de producto.
 
 ```bash
 cd server && npm test
@@ -189,7 +190,7 @@ cd "client frontend" && npm test
 
 ## Ejecutar
 
-Requisitos: Node.js y una base MongoDB (local o Atlas). El proyecto se hizo con Node 16 y en 2026 se volvió a levantar con Node 26. Con versiones nuevas de Node, `npm start` de las apps React puede fallar con `options.allowedHosts[0] should be a non-empty string`, un error conocido de `react-scripts` 5 con la opción `proxy`; en ese caso se pueden compilar con `npm run build` y servir la carpeta `build/`.
+Requisitos: Node.js 20.19 o superior y una base MongoDB (local o Atlas). Las apps React usan **Vite**: `npm run dev` levanta el servidor de desarrollo y redirige `/api` a la API en el puerto 5000; `npm run build` deja la versión de producción en `build/`.
 
 API:
 
@@ -225,19 +226,18 @@ Tienda (en otra terminal, abre `http://localhost:3000`):
 ```bash
 cd "client frontend"
 npm install
-copy .env.example .env
-npm start
+npm run dev
 ```
-
-`client frontend/.env` necesita `REACT_APP_GOOGLE_MAPS_KEY` para la página de ubicación.
 
 Panel de administración (abre `http://localhost:4000`):
 
 ```bash
 cd dashboard
 npm install
-npm start
+npm run dev
 ```
+
+En producción, `VITE_STORE_URL` define la dirección de la tienda para el enlace «Ver la tienda» del panel.
 
 ## Estructura
 
