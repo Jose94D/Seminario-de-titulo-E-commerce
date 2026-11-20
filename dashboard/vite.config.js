@@ -5,6 +5,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 4000,
+    strictPort: true, // CORS_ORIGINS de la API espera este puerto
     proxy: { "/api": "http://localhost:5000" },
   },
   build: { outDir: "build" },

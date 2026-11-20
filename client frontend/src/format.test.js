@@ -1,4 +1,4 @@
-import { formatPrice, categoryName } from "./format";
+import { formatPrice, categoryName, formatDate } from "./format";
 
 // Intl puede separar el signo con un espacio duro según la versión de ICU.
 const normalize = (s) => s.replace(/\s/g, "");
@@ -16,4 +16,10 @@ test("formatPrice tolera valores vacíos o inválidos", () => {
 test("categoryName traduce el slug y devuelve vacío si no existe", () => {
   expect(categoryName("baterias")).toBe("Baterías");
   expect(categoryName("otra")).toBe("");
+});
+
+test("formatDate muestra la fecha en español", () => {
+  const fecha = new Date(2026, 10, 19, 21, 31);
+  expect(formatDate(fecha)).toMatch(/19 nov/);
+  expect(formatDate(fecha, { dateStyle: "long" })).toBe("19 de noviembre de 2026");
 });

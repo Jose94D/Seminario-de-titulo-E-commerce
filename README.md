@@ -102,10 +102,10 @@ Pendiente:
 | API | **Node.js**, **Express 4**, express-async-handler, morgan |
 | Base de datos | **MongoDB Atlas** con **Mongoose 6** |
 | Autenticación | **jsonwebtoken**, **bcryptjs** |
-| Tienda | **React 17**, **Vite**, **Redux** + redux-thunk, React Router 5, axios, CSS propio (Archivo + Inter) |
-| Panel admin | **React 17**, **Vite**, **Redux** + redux-thunk, React Router 5, axios, Bootstrap 5.3 con tema propio |
-| Pagos | react-paypal-button-v2 (PayPal) |
-| Extras | Mapa embebido de Google, react-toastify (panel) |
+| Tienda | **React 19**, **Vite**, **Redux Toolkit** (`configureStore`), React Router 5, axios, CSS propio (Archivo + Inter) |
+| Panel admin | **React 19**, **Vite**, **Redux Toolkit** (`configureStore`), React Router 5, axios, Bootstrap 5.3 con tema propio |
+| Pagos | @paypal/react-paypal-js (SDK oficial de PayPal) |
+| Extras | Mapa embebido de Google, fechas con `Intl`, react-toastify (panel) |
 | Tests | node:test + Supertest (API), Vitest + Testing Library (tienda), GitHub Actions |
 
 ```text

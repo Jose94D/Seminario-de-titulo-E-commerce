@@ -2,12 +2,12 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { Provider } from "react-redux";
-import { createStore } from "redux";
+import { configureStore } from "@reduxjs/toolkit";
 import ProductCard from "./ProductCard";
 
 const renderCard = (product) =>
   render(
-    <Provider store={createStore(() => ({}))}>
+    <Provider store={configureStore({ reducer: () => ({}) })}>
       <MemoryRouter>
         <ProductCard product={product} />
       </MemoryRouter>

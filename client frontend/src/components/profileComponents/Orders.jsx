@@ -1,10 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import moment from "moment";
-import "moment/locale/es";
 import Message from "../LoadingError/Error";
 import Loading from "../LoadingError/Loading";
-import { formatPrice } from "../../format";
+import { formatPrice, formatDate } from "../../format";
 
 const Orders = ({ loading, error, orders }) => {
   if (loading) return <Loading />;
@@ -25,7 +23,7 @@ const Orders = ({ loading, error, orders }) => {
         <article className="order-row" key={order._id}>
           <div>
             <div className="when">
-              Pedido #{order._id.slice(-6).toUpperCase()} · {moment(order.createdAt).locale("es").format("D MMM YYYY")}
+              Pedido #{order._id.slice(-6).toUpperCase()} · {formatDate(order.createdAt)}
             </div>
             <div style={{ marginTop: 8, fontWeight: 600, fontSize: 17 }}>
               {order.orderItems.map((i) => i.name).join(", ")}

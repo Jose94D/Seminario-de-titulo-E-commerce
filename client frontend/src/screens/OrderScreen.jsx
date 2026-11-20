@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { PayPalButton } from "react-paypal-button-v2";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import moment from "moment";
-import "moment/locale/es";
 import Layout from "../components/Layout";
 import Steps from "../components/Steps";
 import OrderLines from "../components/OrderLines";
@@ -12,13 +10,14 @@ import Loading from "../components/LoadingError/Loading";
 import Message from "../components/LoadingError/Error";
 import { getOrderDetails, payOrder, simulacion } from "../Redux/Actions/OrderActions";
 import { ORDER_PAY_RESET } from "../Redux/Constants/OrderConstants";
-import { formatPrice } from "../format";
+import { formatPrice, formatDate } from "../format";
 import { PICKUP_ADDRESS } from "./ShippingScreen";
 
-const fecha = (d) => moment(d).locale("es").format("D [de] MMMM, HH:mm");
+const fecha = (d) => formatDate(d, { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
 
 const OrderScreen = ({ match }) => {
-  const [sdkReady, setSdkReady] = useState(false);
+  // null: cargando; "": la API no tiene PAYPAL_CLIENT_ID
+  const [paypalClientId, setPaypalClientId] = useState(null);
   const orderId = match.params.id;
   const dispatch = useDispatch();
 
@@ -26,22 +25,18 @@ const OrderScreen = ({ match }) => {
   const { loading: loadingPay, success: successPay } = useSelector((state) => state.orderPay);
 
   useEffect(() => {
-    const addPayPalScript = async () => {
-      const { data: clientId } = await axios.get("/api/config/paypal");
-      const script = document.createElement("script");
-      script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}`;
-      script.async = true;
-      script.onload = () => setSdkReady(true);
-      document.body.appendChild(script);
-    };
     if (!order || order._id !== orderId || successPay) {
       dispatch({ type: ORDER_PAY_RESET });
       dispatch(getOrderDetails(orderId));
-    } else if (!order.isPaid) {
-      if (!window.paypal) addPayPalScript();
-      else setSdkReady(true);
     }
   }, [dispatch, orderId, successPay, order]);
+
+  const needsPaypal = order && order._id === orderId && !order.isPaid;
+  useEffect(() => {
+    if (needsPaypal && paypalClientId === null) {
+      axios.get("/api/config/paypal").then(({ data }) => setPaypalClientId(data || ""));
+    }
+  }, [needsPaypal, paypalClientId]);
 
   const ready = !loading && !error && order && order._id === orderId;
   const itemsPrice = ready ? order.orderItems.reduce((acc, item) => acc + item.price * item.qty, 0) : 0;
@@ -141,10 +136,32 @@ const OrderScreen = ({ match }) => {
                 <>
                   {loadingPay && <Loading />}
                   <div className="paypal-box">
-                    {sdkReady ? (
-                      <PayPalButton amount={order.totalPrice} onSuccess={(result) => dispatch(payOrder(orderId, result))} />
-                    ) : (
+                    {paypalClientId === null ? (
                       <Loading />
+                    ) : paypalClientId ? (
+                      <PayPalScriptProvider options={{ clientId: paypalClientId }}>
+                        <PayPalButtons
+                          style={{ layout: "vertical" }}
+                          createOrder={(data, actions) =>
+                            actions.order.create({ purchase_units: [{ amount: { value: String(order.totalPrice) } }] })
+                          }
+                          onApprove={async (data, actions) => {
+                            const details = await actions.order.capture();
+                            dispatch(
+                              payOrder(orderId, {
+                                id: details.id,
+                                status: details.status,
+                                update_time: details.update_time,
+                                email_address: details.payer?.email_address,
+                              })
+                            );
+                          }}
+                        />
+                      </PayPalScriptProvider>
+                    ) : (
+                      <p className="muted" style={{ margin: 0, fontSize: 14 }}>
+                        PayPal no está configurado en esta demo. Usa «Simular pago».
+                      </p>
                     )}
                   </div>
                   <button type="button" className="btn-x btn-on-dark-outline" onClick={() => dispatch(simulacion(order))}>

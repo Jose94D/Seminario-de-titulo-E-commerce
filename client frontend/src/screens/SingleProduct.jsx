@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import moment from "moment";
-import "moment/locale/es";
 import Layout from "../components/Layout";
 import Rating from "../components/homeComponents/Rating";
 import Message from "../components/LoadingError/Error";
 import Loading from "../components/LoadingError/Loading";
 import { createProductReview, listProductDetails } from "../Redux/Actions/ProductActions";
 import { PRODUCT_CREATE_REVIEW_RESET } from "../Redux/Constants/ProductConstants";
-import { formatPrice, categoryName } from "../format";
+import { formatPrice, categoryName, formatDate } from "../format";
 
 const SingleProduct = ({ history, match }) => {
   const [qty, setQty] = useState(1);
@@ -154,7 +152,7 @@ const SingleProduct = ({ history, match }) => {
                   <article key={review._id} className="review">
                     <header>
                       <strong style={{ color: "var(--ink)", fontSize: 16 }}>{review.name}</strong>
-                      <span>{moment(review.createdAt).locale("es").format("LL")}</span>
+                      <span>{formatDate(review.createdAt, { dateStyle: "long" })}</span>
                     </header>
                     <div style={{ marginTop: 8 }}>
                       <Rating value={review.rating} />

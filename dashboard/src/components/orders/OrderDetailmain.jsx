@@ -1,11 +1,10 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import moment from "moment";
-import "moment/locale/es";
 import OrderDetailProducts from "./OrderDetailProducts";
 import OrderDetailInfo from "./OrderDetailInfo";
 import { deliverOrder, getOrderDetails } from "../../Redux/Actions/OrderActions";
+import { formatDate } from "../../format";
 import Loading from "../LoadingError/Loading";
 import Message from "../LoadingError/Error";
 
@@ -32,10 +31,10 @@ const OrderDetailmain = ({ orderId }) => {
           <div className="content-header mt-2">
             <div>
               <h1 className="content-title">Pedido #{order._id.slice(-6).toUpperCase()}</h1>
-              <p className="text-muted m-0 mt-2">{moment(order.createdAt).locale("es").format("LLLL")}</p>
+              <p className="text-muted m-0 mt-2">{formatDate(order.createdAt, { dateStyle: "full", timeStyle: "short", hourCycle: "h23" })}</p>
             </div>
             {order.isDelivered ? (
-              <span className="pill pill-ok">Entregado · {moment(order.deliveredAt).locale("es").format("D MMM YYYY")}</span>
+              <span className="pill pill-ok">Entregado · {formatDate(order.deliveredAt)}</span>
             ) : (
               <button
                 type="button"

@@ -35,7 +35,7 @@ export const login = (email, password) => async (dispatch) => {
     );
 
     if (!data.isAdmin === true) {
-      toast.error("You are not Admin", ToastObjects);
+      toast.error("Esta cuenta no es de administrador", ToastObjects);
       dispatch({
         type: USER_LOGIN_FAIL,
       });

@@ -10,3 +10,12 @@ export const CATEGORIES = [
 ];
 
 export const categoryName = (slug) => (CATEGORIES.find((c) => c.slug === slug) || {}).name || "Sin categoría";
+
+const dateFormats = {};
+
+// Fecha en español de Chile; las opciones son las de Intl.DateTimeFormat
+export const formatDate = (value, options = { day: "numeric", month: "short", year: "numeric" }) => {
+  const key = JSON.stringify(options);
+  dateFormats[key] ||= new Intl.DateTimeFormat("es-CL", options);
+  return dateFormats[key].format(new Date(value));
+};

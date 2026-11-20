@@ -1,8 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import moment from "moment";
-import "moment/locale/es";
-import { formatPrice } from "../../format";
+import { formatPrice, formatDate } from "../../format";
 
 const Orders = ({ orders }) => (
   <table className="table">
@@ -29,7 +27,7 @@ const Orders = ({ orders }) => (
               {order.user ? order.user.email : ""}
             </div>
           </td>
-          <td>{moment(order.createdAt).locale("es").format("D MMM YYYY")}</td>
+          <td>{formatDate(order.createdAt)}</td>
           <td className="fw-semibold">{formatPrice(order.totalPrice)}</td>
           <td>
             <span className={`pill ${order.isPaid ? "pill-ok" : "pill-bad"}`}>{order.isPaid ? "Pagado" : "Pendiente"}</span>

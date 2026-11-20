@@ -1,6 +1,4 @@
-import { createStore, combineReducers, applyMiddleware } from "redux";
-import thunk from "redux-thunk";
-import { composeWithDevTools } from "redux-devtools-extension";
+import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { userListReducer, userLoginReducer } from "./Reducers/userReducers";
 import {
   productCreateReducer,
@@ -37,12 +35,7 @@ const initialState = {
   userLogin: { userInfo: userInfoFromLocalStorage },
 };
 
-const middleware = [thunk];
-
-const store = createStore(
-  reducer,
-  initialState,
-  composeWithDevTools(applyMiddleware(...middleware))
-);
+// configureStore ya incluye redux-thunk y la extensión Redux DevTools
+const store = configureStore({ reducer, preloadedState: initialState });
 
 export default store;

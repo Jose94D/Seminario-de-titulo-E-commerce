@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import "./admin.css";
-import "react-toastify/dist/ReactToastify.css";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import HomeScreen from "./screens/HomeScreen";
 import ProductScreen from "./screens/productScreen";
