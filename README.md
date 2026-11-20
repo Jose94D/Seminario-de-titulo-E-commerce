@@ -81,14 +81,19 @@ Lo que tiene:
 * Un pedido solo lo ve o lo marca como pagado su dueño o un administrador; a los demás la API responde 404, sin revelar que existe.
 * Marcar un pedido como entregado es exclusivo de administradores.
 * Las rutas `/api/import`, que reemplazan usuarios y productos con los de ejemplo, solo existen cuando `NODE_ENV` no es `production`.
+* Los precios de un pedido se calculan en la API con los de la base de datos; del navegador solo se toman el producto y la cantidad, que no puede superar el stock.
+* Validación de los datos de entrada (email, largo de la contraseña, campos obligatorios, precios y stock no negativos, valoración de 1 a 5): los datos inválidos reciben 400 con un mensaje en español, no un error 500.
+* Login y registro solo aceptan texto en email y contraseña, lo que evita inyectar operadores de MongoDB como `{ "$gt": "" }`.
+* Límite de intentos: tras 5 logins fallidos para un mismo email desde una misma IP, la API responde 429 durante 15 minutos.
+* CORS restringido a los orígenes de la tienda y el panel (`CORS_ORIGINS`).
 
-Corregido en 2026, después de la entrega: en la versión presentada cualquier usuario con sesión podía ver, pagar o marcar como entregado un pedido ajeno, y `/api/import` quedaba abierto también en producción. Además, un token válido de un usuario ya eliminado provocaba un error 500; ahora responde 401.
+Corregido en 2026, después de la entrega: en la versión presentada cualquier usuario con sesión podía ver, pagar o marcar como entregado un pedido ajeno, y `/api/import` quedaba abierto también en producción. Además, un token válido de un usuario ya eliminado provocaba un error 500; ahora responde 401. Los precios de cada pedido los enviaba el navegador y la API los guardaba sin revisarlos, y guardar un usuario sin cambiar su contraseña volvía a cifrar el hash.
 
 Pago en modo demo: el pedido se marca como pagado con los datos que envía el navegador tras el botón de PayPal, a propósito, para poder probar la compra completa. En producción, la API confirmaría el pago directamente con PayPal antes de marcarlo.
 
 Pendiente:
 
-* El token se guarda en `localStorage` y CORS acepta cualquier origen.
+* El token se guarda en `localStorage`; una cookie `httpOnly` lo protegería mejor ante un XSS.
 
 ## Tecnología
 
@@ -174,7 +179,7 @@ erDiagram
 
 Cada push a `main` corre en GitHub Actions los tests y compila las dos apps.
 
-* **API** (`server/test`, con `node:test`, Supertest y una MongoDB en memoria): login, registro, rutas privadas, token de un usuario eliminado, filtro por categoría y búsqueda, permisos de administrador y acceso a pedidos ajenos.
+* **API** (`server/test`, con `node:test`, Supertest y una MongoDB en memoria): login, registro, rutas privadas, token de un usuario eliminado, filtro por categoría y búsqueda, permisos de administrador y acceso a pedidos ajenos; y, en `security.test.js`, CORS, validación de datos, inyección de operadores, precios calculados en la API y límite de intentos.
 * **Tienda** (Jest y Testing Library): formato de precios en pesos chilenos, carro de compras y tarjeta de producto.
 
 ```bash
@@ -204,6 +209,7 @@ npm run server
 | `JWT_SECRET` | Firma los tokens. Usa una cadena larga y aleatoria. |
 | `PAYPAL_CLIENT_ID` | Client ID de una app PayPal (sandbox para pruebas). |
 | `MONGO_URL` | Cadena de conexión de MongoDB. |
+| `CORS_ORIGINS` | Orígenes de la tienda y el panel, separados por coma. Por defecto, `http://localhost:3000,http://localhost:4000`. |
 
 Con la API corriendo y `NODE_ENV=development`, carga los datos de ejemplo (borra los existentes):
 
