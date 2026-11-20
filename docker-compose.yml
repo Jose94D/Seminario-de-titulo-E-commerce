@@ -1,0 +1,42 @@
+# docker compose up --build  →  tienda en http://localhost:3000 y panel en http://localhost:4000
+services:
+  mongo:
+    image: mongo:7
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: ./server
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      MONGO_URL: mongodb://mongo:27017/tunningshop
+      # Solo para probar en local: en un servidor real, define JWT_SECRET en el entorno
+      JWT_SECRET: ${JWT_SECRET:-solo-para-desarrollo-local}
+      PAYPAL_CLIENT_ID: ${PAYPAL_CLIENT_ID:-}
+      TRUST_PROXY: 1
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  tienda:
+    build: "./client frontend"
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+
+  panel:
+    build: ./dashboard
+    ports:
+      - "4000:80"
+    depends_on:
+      - api
+
+volumes:
+  mongo-data:

@@ -10,7 +10,7 @@ Tienda online para un local de tuning y accesorios automotrices de Linares, Chil
 
 Está hecha con el stack **MERN**: una API en **Express** sobre **MongoDB**, y dos aplicaciones **React** con **Redux** (la tienda y el panel).
 
-> **Estado:** versión 2, en desarrollo. Parte del proyecto de **seminario de título** presentado en 2023 y lo moderniza: imágenes optimizadas, correcciones de seguridad, un rediseño completo y tests automáticos.
+> **Estado:** versión 2, en desarrollo. Parte del proyecto de **seminario de título** presentado en 2023 y lo moderniza: imágenes optimizadas, correcciones de seguridad, un rediseño completo, tests automáticos, un stack actualizado (Vite, React 19, React Router 7 y Redux Toolkit) y Docker.
 >
 > **Versión original:** el proyecto tal como se presentó en 2023 está en la rama [`tesis-2023`](../../tree/tesis-2023) y en el tag [`v1.0-tesis`](../../releases/tag/v1.0-tesis).
 
@@ -107,6 +107,7 @@ Pendiente:
 | Pagos | @paypal/react-paypal-js (SDK oficial de PayPal) |
 | Extras | Mapa embebido de Google, fechas con `Intl`, react-toastify (panel) |
 | Tests | node:test + Supertest (API), Vitest + Testing Library (tienda), GitHub Actions |
+| Despliegue | Docker Compose: MongoDB 7, la API en Node 22 y las apps servidas con nginx |
 
 ```text
  Cliente  ───► Tienda React  (:3000) ──┐
@@ -190,6 +191,20 @@ cd "client frontend" && npm test
 
 ## Ejecutar
 
+### Con Docker
+
+Con [Docker](https://www.docker.com/) instalado, un solo comando levanta MongoDB, la API, la tienda y el panel, y carga los datos de ejemplo la primera vez:
+
+```bash
+docker compose up --build
+```
+
+Tienda en `http://localhost:3000` y panel en `http://localhost:4000`. Las cuentas de prueba son `admin@example.com` (administrador) y `user@example.com`, ambas con la contraseña `password`. Los datos quedan en un volumen de Docker; `docker compose down -v` los borra.
+
+Cada push a `main` levanta este mismo `docker compose` en GitHub Actions y comprueba que la tienda, el panel y la API respondan.
+
+### Sin Docker
+
 Requisitos: Node.js 20.19 o superior y una base MongoDB (local o Atlas). Las apps React usan **Vite**: `npm run dev` levanta el servidor de desarrollo y redirige `/api` a la API en el puerto 5000; `npm run build` deja la versión de producción en `build/`.
 
 API:
@@ -211,13 +226,15 @@ npm run server
 | `PAYPAL_CLIENT_ID` | Client ID de una app PayPal (sandbox para pruebas). |
 | `MONGO_URL` | Cadena de conexión de MongoDB. |
 | `CORS_ORIGINS` | Orígenes de la tienda y el panel, separados por coma. Por defecto, `http://localhost:3000,http://localhost:4000`. |
+| `TRUST_PROXY` | Número de proxies delante de la API (por ejemplo `1` detrás de nginx o Render). Sin esto, el límite de intentos del login vería la IP del proxy para todos los visitantes. |
 
-Con la API corriendo y `NODE_ENV=development`, carga los datos de ejemplo (borra los existentes):
+Carga los datos de ejemplo; solo se insertan en colecciones vacías, así que no borra nada:
 
 ```bash
-curl -X POST http://localhost:5000/api/import/user
-curl -X POST http://localhost:5000/api/import/products
+npm run seed
 ```
+
+También existen las rutas `POST /api/import/user` y `POST /api/import/products`, que **reemplazan** los datos y solo funcionan con `NODE_ENV=development`.
 
 Quedan dos cuentas de prueba, `admin@example.com` (administrador) y `user@example.com`, ambas con la contraseña `password`.
 
@@ -250,7 +267,9 @@ En producción, `VITE_STORE_URL` define la dirección de la tienda para el enlac
 │   ├── data/               usuarios y productos de ejemplo
 │   ├── test/               tests de la API
 │   ├── app.js              la app Express (sin conexión ni puerto)
-│   └── DataImport.js       rutas /api/import
+│   ├── seed.js             carga los datos de ejemplo en una base vacía
+│   ├── DataImport.js       rutas /api/import
+│   └── Dockerfile
 ├── client frontend/        tienda (React + Redux)
 │   └── src/
 │       ├── screens/        páginas: inicio, producto, carrito, pago, perfil…
@@ -261,7 +280,9 @@ En producción, `VITE_STORE_URL` define la dirección de la tienda para el enlac
 │       ├── screens/        resumen, productos, pedidos, usuarios
 │       ├── components/
 │       └── Redux/
-└── docs/                   capturas, banner e informe del seminario (PDF)
+├── docs/                   capturas, banner e informe del seminario (PDF)
+├── .github/workflows/      CI: tests, builds y arranque con Docker Compose
+└── docker-compose.yml      MongoDB, API, tienda y panel (estos dos servidos con nginx)
 ```
 
 ## Nota de uso

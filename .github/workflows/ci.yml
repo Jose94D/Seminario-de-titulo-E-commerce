@@ -58,3 +58,25 @@ jobs:
       - run: npm run build
         env:
           CI: true
+
+  docker:
+    name: Docker Compose · arranque
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: docker compose up -d --build
+      - name: Tienda, panel y API responden con los datos de ejemplo
+        run: |
+          for i in $(seq 1 30); do
+            curl -sf localhost:3000/api/products | grep -q '"products"' && break
+            sleep 2
+          done
+          test "$(curl -sf localhost:3000/api/products | jq '.products | length')" -gt 0
+          curl -sf localhost:3000/categoria/baterias | grep -q 'id="root"'
+          curl -sf localhost:4000/login | grep -q 'id="root"'
+          curl -sf -X POST localhost:4000/api/users/login -H "Content-Type: application/json" \
+            -d '{"email":"admin@example.com","password":"password"}' | jq -e '.isAdmin == true'
+      - if: failure()
+        run: docker compose logs
+      - if: always()
+        run: docker compose down -v

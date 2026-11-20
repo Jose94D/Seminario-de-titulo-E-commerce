@@ -8,6 +8,9 @@ import { errorHandler, notFound } from "./Middleware/Errors.js";
 
 // La app sin conexión a la base ni puerto, para poder probarla.
 const app = express();
+// Detrás de un proxy (nginx, Render…), req.ip debe ser la del visitante y no la del proxy:
+// de eso depende el límite de intentos del login.
+if (process.env.TRUST_PROXY) app.set("trust proxy", Number(process.env.TRUST_PROXY));
 app.use(express.json());
 // Orígenes que pueden llamar a la API desde el navegador, separados por coma.
 const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:3000,http://localhost:4000")
