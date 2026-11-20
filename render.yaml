@@ -1,0 +1,61 @@
+# Blueprint de Render: la API (servicio web gratuito) y la tienda y el panel (sitios estáticos).
+# La tienda y el panel reenvían /api a la API, como nginx en docker-compose.yml.
+services:
+  - type: web
+    name: tunning-shop-api
+    runtime: node
+    plan: free
+    rootDir: server
+    buildCommand: npm ci --omit=dev
+    # carga los datos de ejemplo solo si la base está vacía
+    startCommand: node seed.js && node server.js
+    healthCheckPath: /api/products
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: TRUST_PROXY
+        value: "1"
+      - key: MONGO_URL
+        sync: false # se pide al crear el Blueprint
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+
+  - type: web
+    name: tunning-shop-tienda
+    runtime: static
+    rootDir: client frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: build
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+    routes:
+      - type: rewrite
+        source: /api/*
+        destination: https://tunning-shop-api.onrender.com/api/*
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+  - type: web
+    name: tunning-shop-panel
+    runtime: static
+    rootDir: dashboard
+    buildCommand: npm ci && npm run build
+    staticPublishPath: build
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: VITE_STORE_URL
+        value: https://tunning-shop-tienda.onrender.com
+    routes:
+      - type: rewrite
+        source: /api/*
+        destination: https://tunning-shop-api.onrender.com/api/*
+      - type: rewrite
+        source: /*
+        destination: /index.html
