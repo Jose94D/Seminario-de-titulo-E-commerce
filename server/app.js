@@ -9,7 +9,11 @@ import { errorHandler, notFound } from "./Middleware/Errors.js";
 // La app sin conexión a la base ni puerto, para poder probarla.
 const app = express();
 app.use(express.json());
-app.use(cors());
+// Orígenes que pueden llamar a la API desde el navegador, separados por coma.
+const allowedOrigins = (process.env.CORS_ORIGINS || "http://localhost:3000,http://localhost:4000")
+  .split(",")
+  .map((o) => o.trim());
+app.use(cors({ origin: allowedOrigins }));
 
 // API
 // Reemplaza usuarios y productos con los de ejemplo: solo fuera de producción.

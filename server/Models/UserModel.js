@@ -5,16 +5,20 @@ const userSchema = mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: [true, "El nombre es obligatorio"],
+      trim: true,
     },
     email: {
       type: String,
-      required: true,
+      required: [true, "El email es obligatorio"],
       unique: true,
+      match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "El email no es válido"],
     },
     password: {
       type: String,
-      required: true,
+      required: [true, "La contraseña es obligatoria"],
+      // se valida antes del hook que la cifra
+      minlength: [6, "La contraseña debe tener al menos 6 caracteres"],
     },
     isAdmin: {
       type: Boolean,
@@ -23,15 +27,15 @@ const userSchema = mongoose.Schema(
     },
     telefono: {
       type: String,
-      required: true,
+      required: [true, "El teléfono es obligatorio"],
     },
     direccion: {
       type: String,
-      required: true,
+      required: [true, "La dirección es obligatoria"],
     },
     rut: {
       type: String,
-      required: true,
+      required: [true, "El RUT es obligatorio"],
       unique: true,
     }
   },

@@ -1,16 +1,38 @@
 import express from "express";
 import asyncHandler from "express-async-handler";
+import { rateLimit, ipKeyGenerator } from "express-rate-limit";
 import { protect, admin } from "../Middleware/AuthMiddleware.js";
 import generateToken from "../utils/generateToken.js";
 import User from "./../Models/UserModel.js";
 
 const userRouter = express.Router();
 
+// Un objeto como { "$gt": "" } en email o password se colaría en la consulta a MongoDB.
+const requireStrings = (res, ...values) => {
+  if (values.some((v) => typeof v !== "string" || v.trim() === "")) {
+    res.status(400);
+    throw new Error("Email y contraseña son obligatorios");
+  }
+};
+
+// 5 intentos fallidos por IP y email cada 15 minutos; los correctos no cuentan.
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 5,
+  skipSuccessfulRequests: true,
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+  keyGenerator: (req) => `${ipKeyGenerator(req.ip)}:${String(req.body?.email).toLowerCase()}`,
+  message: { message: "Demasiados intentos fallidos. Prueba de nuevo en 15 minutos." },
+});
+
 // LOGIN
 userRouter.post(
   "/login",
+  loginLimiter,
   asyncHandler(async (req, res) => {
     const { email, password } = req.body;
+    requireStrings(res, email, password);
     const user = await User.findOne({ email });
 
     if (user && (await user.matchPassword(password))) {
@@ -34,6 +56,7 @@ userRouter.post(
   "/",
   asyncHandler(async (req, res) => {
     const { name, email, password, telefono, direccion, rut } = req.body;
+    requireStrings(res, email, password);
 
     const userExists = await User.findOne({ email });
 

@@ -3,8 +3,8 @@ import mongoose from "mongoose";
 const reviewSchema = mongoose.Schema(
   {
     name: { type: String, required: true },
-    rating: { type: Number, required: true },
-    comment: { type: String, required: true },
+    rating: { type: Number, required: true, min: [1, "La valoración va de 1 a 5"], max: [5, "La valoración va de 1 a 5"] },
+    comment: { type: String, required: [true, "El comentario es obligatorio"] },
     user: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
@@ -20,7 +20,8 @@ const productSchema = mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
+      required: [true, "El nombre es obligatorio"],
+      trim: true,
     },
     image: {
       type: String,
@@ -51,11 +52,14 @@ const productSchema = mongoose.Schema(
       type: Number,
       required: true,
       default: 0,
+      min: [0, "El precio no puede ser negativo"],
     },
     countInStock: {
       type: Number,
       required: true,
       default: 0,
+      min: [0, "El stock no puede ser negativo"],
+      validate: { validator: Number.isInteger, message: "El stock debe ser un número entero" },
     },
   },
   {

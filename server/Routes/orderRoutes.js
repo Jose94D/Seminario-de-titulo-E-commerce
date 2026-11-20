@@ -2,6 +2,7 @@ import express from "express";
 import asyncHandler from "express-async-handler";
 import { admin, protect } from "../Middleware/AuthMiddleware.js";
 import Order from "./../Models/OrderModel.js";
+import Product from "./../Models/ProductModel.js";
 
 const orderRouter = express.Router();
 
@@ -15,35 +16,38 @@ orderRouter.post(
   "/",
   protect,
   asyncHandler(async (req, res) => {
-    const {
-      orderItems,
-      shippingAddress,
-      paymentMethod,
-      itemsPrice,
-      taxPrice,
-      shippingPrice,
-      totalPrice,
-    } = req.body;
+    const { orderItems, shippingAddress, paymentMethod } = req.body;
 
-    if (orderItems && orderItems.length === 0) {
+    if (!Array.isArray(orderItems) || orderItems.length === 0) {
       res.status(400);
       throw new Error("No order items");
-      return;
-    } else {
-      const order = new Order({
-        orderItems,
-        user: req.user._id,
-        shippingAddress,
-        paymentMethod,
-        itemsPrice,
-        taxPrice,
-        shippingPrice,
-        totalPrice,
-      });
-
-      const createOrder = await order.save();
-      res.status(201).json(createOrder);
     }
+
+    // Nombre, imagen y precio salen de la base: el navegador solo elige producto y cantidad.
+    const products = await Product.find({ _id: { $in: orderItems.map((i) => i.product) } });
+    const items = orderItems.map((i) => {
+      const product = products.find((p) => String(p._id) === String(i.product));
+      const qty = Number(i.qty);
+      if (!product || !Number.isInteger(qty) || qty < 1 || qty > product.countInStock) {
+        res.status(400);
+        throw new Error(`Producto no disponible o cantidad inválida${product ? `: ${product.name}` : ""}`);
+      }
+      return { name: product.name, qty, image: product.image, price: product.price, product: product._id };
+    });
+    const itemsPrice = items.reduce((sum, i) => sum + i.price * i.qty, 0);
+
+    const order = new Order({
+      orderItems: items,
+      user: req.user._id,
+      shippingAddress,
+      paymentMethod,
+      taxPrice: 0,
+      shippingPrice: 0,
+      totalPrice: itemsPrice,
+    });
+
+    const createOrder = await order.save();
+    res.status(201).json(createOrder);
   })
 );
 
