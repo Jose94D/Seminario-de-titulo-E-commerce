@@ -5,7 +5,7 @@
   "type": "module",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --test test/",
     "start": "node ./server.js",
     "server": "nodemon ./server.js"
   },
@@ -23,6 +23,8 @@
   },
   "devDependencies": {
     "concurrently": "^7.0.0",
-    "nodemon": "^2.0.15"
+    "mongodb-memory-server": "^11.3.0",
+    "nodemon": "^2.0.15",
+    "supertest": "^7.3.2"
   }
 }
