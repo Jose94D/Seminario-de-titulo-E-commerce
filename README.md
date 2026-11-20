@@ -4,11 +4,13 @@
 
 # Tunning Shop Linares
 
+[![CI](https://github.com/Jose94D/Seminario-de-titulo-E-commerce/actions/workflows/ci.yml/badge.svg)](https://github.com/Jose94D/Seminario-de-titulo-E-commerce/actions/workflows/ci.yml) [![Licencia MIT](https://img.shields.io/badge/licencia-MIT-blue.svg)](LICENSE)
+
 Tienda online para un local de tuning y accesorios automotrices de Linares, Chile. Los clientes navegan el catálogo, arman su carrito y pagan con **PayPal**; el dueño administra productos, pedidos y usuarios desde un **panel de administración** aparte.
 
 Está hecha con el stack **MERN**: una API en **Express** sobre **MongoDB**, y dos aplicaciones **React** con **Redux** (la tienda y el panel).
 
-> **Estado:** versión 2, en desarrollo. Parte del proyecto de **seminario de título** presentado en 2023 y lo moderniza: imágenes optimizadas, correcciones de seguridad y, próximamente, un rediseño completo.
+> **Estado:** versión 2, en desarrollo. Parte del proyecto de **seminario de título** presentado en 2023 y lo moderniza: imágenes optimizadas, correcciones de seguridad, un rediseño completo y tests automáticos.
 >
 > **Versión original:** el proyecto tal como se presentó en 2023 está en la rama [`tesis-2023`](../../tree/tesis-2023) y en el tag [`v1.0-tesis`](../../releases/tag/v1.0-tesis).
 
@@ -168,6 +170,18 @@ erDiagram
     }
 ```
 
+## Tests
+
+Cada push a `main` corre en GitHub Actions los tests y compila las dos apps.
+
+* **API** (`server/test`, con `node:test`, Supertest y una MongoDB en memoria): login, registro, rutas privadas, token de un usuario eliminado, filtro por categoría y búsqueda, permisos de administrador y acceso a pedidos ajenos.
+* **Tienda** (Jest y Testing Library): formato de precios en pesos chilenos, carro de compras y tarjeta de producto.
+
+```bash
+cd server && npm test
+cd "client frontend" && npm test
+```
+
 ## Ejecutar
 
 Requisitos: Node.js y una base MongoDB (local o Atlas). El proyecto se hizo con Node 16 y en 2026 se volvió a levantar con Node 26. Con versiones nuevas de Node, `npm start` de las apps React puede fallar con `options.allowedHosts[0] should be a non-empty string`, un error conocido de `react-scripts` 5 con la opción `proxy`; en ese caso se pueden compilar con `npm run build` y servir la carpeta `build/`.
@@ -228,6 +242,8 @@ npm start
 │   ├── Routes/             /api/users, /api/products, /api/orders
 │   ├── Middleware/         protect, admin y manejo de errores
 │   ├── data/               usuarios y productos de ejemplo
+│   ├── test/               tests de la API
+│   ├── app.js              la app Express (sin conexión ni puerto)
 │   └── DataImport.js       rutas /api/import
 ├── client frontend/        tienda (React + Redux)
 │   └── src/
