@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import Message from "../LoadingError/Error";
 import Loading from "../LoadingError/Loading";
 import { formatPrice, formatDate } from "../../format";

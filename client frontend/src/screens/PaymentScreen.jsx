@@ -1,7 +1,7 @@
 import React from "react";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router";
 
 // El método de pago ahora se elige junto con la entrega.
-const PaymentScreen = () => <Redirect to="/shipping" />;
+const PaymentScreen = () => <Navigate to="/shipping" replace />;
 
 export default PaymentScreen;

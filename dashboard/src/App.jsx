@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import "./admin.css";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router";
 import HomeScreen from "./screens/HomeScreen";
 import ProductScreen from "./screens/productScreen";
 import OrderScreen from "./screens/OrderScreen";
@@ -30,22 +30,21 @@ function App() {
 
   return (
     <>
-      <Router>
-        <Switch>
-          <PrivateRouter path="/" component={HomeScreen} exact />
-          <PrivateRouter path="/products" component={ProductScreen} />
-          <PrivateRouter path="/orders" component={OrderScreen} />
-          <PrivateRouter path="/order/:id" component={OrderDetailScreen} />
-          <PrivateRouter path="/addproduct" component={AddProduct} />
-          <PrivateRouter path="/users" component={UsersScreen} />
-          <PrivateRouter
-            path="/product/:id/edit"
-            component={ProductEditScreen}
-          />
-          <Route path="/login" component={Login} />
-          <PrivateRouter path="*" component={NotFound} />
-        </Switch>
-      </Router>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route element={<PrivateRouter />}>
+            <Route path="/" element={<HomeScreen />} />
+            <Route path="/products" element={<ProductScreen />} />
+            <Route path="/orders" element={<OrderScreen />} />
+            <Route path="/order/:id" element={<OrderDetailScreen />} />
+            <Route path="/addproduct" element={<AddProduct />} />
+            <Route path="/users" element={<UsersScreen />} />
+            <Route path="/product/:id/edit" element={<ProductEditScreen />} />
+            <Route path="*" element={<NotFound />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
     </>
   );
 }

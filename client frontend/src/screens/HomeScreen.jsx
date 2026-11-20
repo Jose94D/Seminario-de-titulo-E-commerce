@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useParams } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import Layout from "../components/Layout";
 import ShopSection from "../components/homeComponents/ShopSection";
@@ -56,8 +56,9 @@ const Featured = ({ product }) => {
   );
 };
 
-const HomeScreen = ({ match }) => {
-  const { keyword, pagenumber, category } = match.params;
+const HomeScreen = () => {
+  const params = useParams();
+  const { keyword, pagenumber, category } = params;
   const dispatch = useDispatch();
   const productList = useSelector((state) => state.productList);
   const isLanding = !keyword && !category && !pagenumber;
@@ -81,11 +82,11 @@ const HomeScreen = ({ match }) => {
             {title}
           </h1>
           <nav className="filters" aria-label="Filtrar por categoría" style={{ marginBottom: 32 }}>
-            <NavLink to="/page/1" isActive={() => !category && !keyword} activeClassName="active">
+            <NavLink to="/page/1" className={() => (!category && !keyword ? "active" : "")}>
               Todo
             </NavLink>
             {CATEGORIES.map((c) => (
-              <NavLink key={c.slug} to={`/categoria/${c.slug}`} activeClassName="active">
+              <NavLink key={c.slug} to={`/categoria/${c.slug}`}>
                 {c.name}
               </NavLink>
             ))}

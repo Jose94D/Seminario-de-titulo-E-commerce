@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import Layout from "../components/Layout";
 import Steps from "../components/Steps";
@@ -7,7 +8,8 @@ import { formatPrice } from "../format";
 
 export const PICKUP_ADDRESS = "Retiro en el local · Brasil #0196";
 
-const ShippingScreen = ({ history }) => {
+const ShippingScreen = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { shippingAddress = {}, cartItems } = useSelector((state) => state.cart);
   const wasPickup = !shippingAddress.address || shippingAddress.address === PICKUP_ADDRESS;
@@ -23,7 +25,7 @@ const ShippingScreen = ({ history }) => {
       saveShippingAddress(mode === "retiro" ? { address: PICKUP_ADDRESS, city: "Linares" } : { address, city })
     );
     dispatch(savePaymentMethod("PayPal"));
-    history.push("/placeorder");
+    navigate("/placeorder");
   };
 
   return (

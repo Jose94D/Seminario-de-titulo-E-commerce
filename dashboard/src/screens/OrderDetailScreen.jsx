@@ -1,10 +1,12 @@
 import React from "react";
+import { useParams } from "react-router";
 import Sidebar from "./../components/sidebar";
 import Header from "./../components/Header";
 import OrderDetailmain from "../components/orders/OrderDetailmain";
 
-const OrderDetailScreen = ({ match }) => {
-  const orderId = match.params.id;
+const OrderDetailScreen = () => {
+  const params = useParams();
+  const orderId = params.id;
   return (
     <>
       <Sidebar />

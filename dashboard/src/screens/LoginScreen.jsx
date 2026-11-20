@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import Toast from "../components/LoadingError/Toast";
 import { login } from "../Redux/Actions/userActions";
 import Message from "./../components/LoadingError/Error";
 
-const Login = ({ history }) => {
+const Login = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
   const { error, loading, userInfo } = useSelector((state) => state.userLogin);
 
   useEffect(() => {
-    if (userInfo) history.push("/");
-  }, [userInfo, history]);
+    if (userInfo?.isAdmin) navigate("/");
+  }, [userInfo, navigate]);
 
   const submitHandler = (e) => {
     e.preventDefault();

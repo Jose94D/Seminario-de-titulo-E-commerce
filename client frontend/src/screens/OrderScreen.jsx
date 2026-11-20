@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
@@ -15,10 +15,11 @@ import { PICKUP_ADDRESS } from "./ShippingScreen";
 
 const fecha = (d) => formatDate(d, { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
 
-const OrderScreen = ({ match }) => {
+const OrderScreen = () => {
+  const params = useParams();
   // null: cargando; "": la API no tiene PAYPAL_CLIENT_ID
   const [paypalClientId, setPaypalClientId] = useState(null);
-  const orderId = match.params.id;
+  const orderId = params.id;
   const dispatch = useDispatch();
 
   const { order, loading, error } = useSelector((state) => state.orderDetails);

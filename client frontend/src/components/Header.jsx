@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, NavLink, useHistory } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../Redux/Actions/userActions";
 import { CATEGORIES } from "../format";
@@ -7,7 +7,7 @@ import { CATEGORIES } from "../format";
 const Header = () => {
   const [keyword, setKeyword] = useState("");
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const { cartItems } = useSelector((state) => state.cart);
   const { userInfo } = useSelector((state) => state.userLogin);
@@ -15,7 +15,7 @@ const Header = () => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    history.push(keyword.trim() ? `/search/${encodeURIComponent(keyword.trim())}` : "/");
+    navigate(keyword.trim() ? `/search/${encodeURIComponent(keyword.trim())}` : "/");
   };
 
   return (
@@ -26,11 +26,11 @@ const Header = () => {
 
       <nav className="main-nav" aria-label="Categorías">
         {CATEGORIES.map((c) => (
-          <NavLink key={c.slug} to={`/categoria/${c.slug}`} activeClassName="active">
+          <NavLink key={c.slug} to={`/categoria/${c.slug}`}>
             {c.name}
           </NavLink>
         ))}
-        <NavLink to="/sobre_nosotros" activeClassName="active">
+        <NavLink to="/sobre_nosotros">
           Sobre nosotros
         </NavLink>
       </nav>

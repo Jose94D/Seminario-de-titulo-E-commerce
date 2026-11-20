@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router";
 import Layout from "../components/Layout";
 import Message from "../components/LoadingError/Error";
 import { login } from "../Redux/Actions/userActions";
 
-const Login = ({ location, history }) => {
+const Login = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
@@ -13,8 +15,8 @@ const Login = ({ location, history }) => {
   const { error, loading, userInfo } = useSelector((state) => state.userLogin);
 
   useEffect(() => {
-    if (userInfo) history.push(redirect.startsWith("/") ? redirect : `/${redirect}`);
-  }, [userInfo, history, redirect]);
+    if (userInfo) navigate(redirect.startsWith("/") ? redirect : `/${redirect}`);
+  }, [userInfo, navigate, redirect]);
 
   const submitHandler = (e) => {
     e.preventDefault();

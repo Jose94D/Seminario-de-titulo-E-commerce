@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import Layout from "../components/Layout";
 import Steps from "../components/Steps";
@@ -10,7 +10,8 @@ import { ORDER_CREATE_RESET } from "../Redux/Constants/OrderConstants";
 import { formatPrice } from "../format";
 import { PICKUP_ADDRESS } from "./ShippingScreen";
 
-const PlaceOrderScreen = ({ history }) => {
+const PlaceOrderScreen = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart);
   const { userInfo } = useSelector((state) => state.userLogin);
@@ -21,15 +22,15 @@ const PlaceOrderScreen = ({ history }) => {
   const isPickup = address.address === PICKUP_ADDRESS;
 
   useEffect(() => {
-    if (!address.address) history.replace("/shipping");
-  }, [address.address, history]);
+    if (!address.address) navigate("/shipping", { replace: true });
+  }, [address.address, navigate]);
 
   useEffect(() => {
     if (success) {
-      history.push(`/order/${order._id}`);
+      navigate(`/order/${order._id}`);
       dispatch({ type: ORDER_CREATE_RESET });
     }
-  }, [history, dispatch, success, order]);
+  }, [navigate, dispatch, success, order]);
 
   const placeOrderHandler = () => {
     dispatch(

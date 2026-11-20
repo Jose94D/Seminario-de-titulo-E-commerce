@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import Layout from "../components/Layout";
 import Rating from "../components/homeComponents/Rating";
@@ -9,13 +9,15 @@ import { createProductReview, listProductDetails } from "../Redux/Actions/Produc
 import { PRODUCT_CREATE_REVIEW_RESET } from "../Redux/Constants/ProductConstants";
 import { formatPrice, categoryName, formatDate } from "../format";
 
-const SingleProduct = ({ history, match }) => {
+const SingleProduct = () => {
+  const params = useParams();
+  const navigate = useNavigate();
   const [qty, setQty] = useState(1);
   const [rating, setRating] = useState("");
   const [comment, setComment] = useState("");
   const [reviewSent, setReviewSent] = useState(false);
 
-  const productId = match.params.id;
+  const productId = params.id;
   const dispatch = useDispatch();
 
   const { loading, error, product } = useSelector((state) => state.productDetails);
@@ -36,7 +38,7 @@ const SingleProduct = ({ history, match }) => {
     dispatch(listProductDetails(productId));
   }, [dispatch, productId, successCreateReview]);
 
-  const addToCartHandler = () => history.push(`/cart/${productId}?qty=${qty}`);
+  const addToCartHandler = () => navigate(`/cart/${productId}?qty=${qty}`);
 
   const submitHandler = (e) => {
     e.preventDefault();

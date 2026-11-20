@@ -1,14 +1,17 @@
 import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams, useLocation, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import Layout from "../components/Layout";
 import Steps from "../components/Steps";
 import { addToCart, removefromcart } from "../Redux/Actions/cartActions";
 import { formatPrice } from "../format";
 
-const CartScreen = ({ match, location, history }) => {
+const CartScreen = () => {
+  const params = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const productId = match.params.id;
+  const productId = params.id;
   const qty = location.search ? Number(new URLSearchParams(location.search).get("qty")) || 1 : 1;
 
   const { cartItems } = useSelector((state) => state.cart);
@@ -18,9 +21,9 @@ const CartScreen = ({ match, location, history }) => {
   useEffect(() => {
     if (productId) {
       dispatch(addToCart(productId, qty));
-      history.replace("/cart");
+      navigate("/cart", { replace: true });
     }
-  }, [dispatch, productId, qty, history]);
+  }, [dispatch, productId, qty, navigate]);
 
   return (
     <Layout title="Carro">
@@ -102,7 +105,7 @@ const CartScreen = ({ match, location, history }) => {
             type="button"
             className="btn-x lg btn-primary-x"
             disabled={cartItems.length === 0}
-            onClick={() => history.push("/login?redirect=shipping")}
+            onClick={() => navigate("/login?redirect=shipping")}
           >
             Continuar a la entrega
           </button>

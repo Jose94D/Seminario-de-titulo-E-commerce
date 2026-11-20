@@ -41,9 +41,9 @@ export const login = (email, password) => async (dispatch) => {
       });
     } else {
       dispatch({ type: USER_LOGIN_SUCCESS, payload: data });
+      // solo se guarda la sesión de un administrador; la de un cliente dejaba el panel en un bucle de redirecciones
+      localStorage.setItem("userInfo", JSON.stringify(data));
     }
-
-    localStorage.setItem("userInfo", JSON.stringify(data));
   } catch (error) {
     const message =
       error.response && error.response.data.message

@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../Redux/Actions/userActions";
 
@@ -26,7 +26,7 @@ const Sidebar = () => {
         <ul className="menu-aside">
           {LINKS.map(([to, label, exact]) => (
             <li key={to}>
-              <NavLink className="menu-link" activeClassName="active" to={to} exact={exact}>
+              <NavLink className="menu-link" to={to} end={exact}>
                 {label}
               </NavLink>
             </li>

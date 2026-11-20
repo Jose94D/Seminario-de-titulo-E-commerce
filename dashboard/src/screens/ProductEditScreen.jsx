@@ -1,10 +1,12 @@
 import React from "react";
+import { useParams } from "react-router";
 import Sidebar from "./../components/sidebar";
 import Header from "./../components/Header";
 import EditProductMain from "./../components/products/EditproductMain";
 
-const ProductEditScreen = ({ match }) => {
-  const productId = match.params.id;
+const ProductEditScreen = () => {
+  const params = useParams();
+  const productId = params.id;
   return (
     <>
       <Sidebar />

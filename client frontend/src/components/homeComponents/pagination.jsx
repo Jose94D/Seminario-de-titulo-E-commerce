@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 // base: la ruta del listado actual ("" para el catálogo completo, "/search/x", "/categoria/y")
 const Pagination = ({ page, pages, base = "" }) =>

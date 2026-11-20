@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { formatPrice } from "../format";
 
 // Lista de productos de un pedido (o del carro al confirmar).
