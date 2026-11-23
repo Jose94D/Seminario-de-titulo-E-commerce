@@ -19,6 +19,8 @@ services:
         generateValue: true
       - key: TRUST_PROXY
         value: "1"
+      - key: DEMO_MODE # administrador de solo lectura y datos personales ocultos
+        value: "true"
       - key: MONGO_URL
         sync: false # se pide al crear el Blueprint
       - key: PAYPAL_CLIENT_ID

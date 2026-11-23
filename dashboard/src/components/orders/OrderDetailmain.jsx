@@ -11,7 +11,7 @@ import Message from "../LoadingError/Error";
 const OrderDetailmain = ({ orderId }) => {
   const dispatch = useDispatch();
   const { loading, error, order } = useSelector((state) => state.orderDetails);
-  const { loading: loadingDelivered, success: successDelivered } = useSelector((state) => state.orderDeliver);
+  const { loading: loadingDelivered, error: errorDelivered, success: successDelivered } = useSelector((state) => state.orderDeliver);
 
   useEffect(() => {
     dispatch(getOrderDetails(orderId));
@@ -47,6 +47,8 @@ const OrderDetailmain = ({ orderId }) => {
               </button>
             )}
           </div>
+
+          {errorDelivered && <Message variant="alert-danger">{errorDelivered}</Message>}
 
           <div className="card">
             <div className="card-body">

@@ -2,6 +2,7 @@ import express from "express";
 import asyncHandler from "express-async-handler";
 import { rateLimit, ipKeyGenerator } from "express-rate-limit";
 import { protect, admin } from "../Middleware/AuthMiddleware.js";
+import { maskUser, protectSeedAccount } from "../Middleware/demo.js";
 import generateToken from "../utils/generateToken.js";
 import User from "./../Models/UserModel.js";
 
@@ -121,6 +122,7 @@ userRouter.get(
 userRouter.put(
   "/profile",
   protect,
+  protectSeedAccount,
   asyncHandler(async (req, res) => {
     const user = await User.findById(req.user._id);
 
@@ -158,8 +160,8 @@ userRouter.get(
   protect,
   admin,
   asyncHandler(async (req, res) => {
-    const users = await User.find({});
-    res.json(users);
+    const users = await User.find({}).select("-password");
+    res.json(users.map((user) => maskUser(user.toObject())));
   })
 );
 

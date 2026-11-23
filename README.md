@@ -74,7 +74,7 @@ Versión 2, con el rediseño «Taller premium» y el catálogo de ejemplo (produ
 
 Lo que tiene:
 
-* Contraseñas con hash **bcrypt**; nunca se devuelven en las respuestas.
+* Contraseñas con hash **bcrypt**; ni el hash se devuelve en las respuestas.
 * Token **JWT** firmado con una clave del `.env`, exigido en las rutas privadas.
 * Las rutas de administración exigen además `isAdmin`.
 * Credenciales (MongoDB, PayPal, JWT) fuera del código, en archivos `.env`.
@@ -85,9 +85,10 @@ Lo que tiene:
 * Validación de los datos de entrada (email, largo de la contraseña, campos obligatorios, precios y stock no negativos, valoración de 1 a 5): los datos inválidos reciben 400 con un mensaje en español, no un error 500.
 * Login y registro solo aceptan texto en email y contraseña, lo que evita inyectar operadores de MongoDB como `{ "$gt": "" }`.
 * Límite de intentos: tras 5 logins fallidos para un mismo email desde una misma IP, la API responde 429 durante 15 minutos.
+* Modo demo (`DEMO_MODE=true`) para publicar el sitio con cuentas de prueba conocidas: el administrador es de solo lectura, las cuentas de prueba no se pueden editar y la API oculta los datos personales de los clientes.
 * CORS restringido a los orígenes de la tienda y el panel (`CORS_ORIGINS`).
 
-Corregido en 2026, después de la entrega: en la versión presentada cualquier usuario con sesión podía ver, pagar o marcar como entregado un pedido ajeno, y `/api/import` quedaba abierto también en producción. Además, un token válido de un usuario ya eliminado provocaba un error 500; ahora responde 401. Los precios de cada pedido los enviaba el navegador y la API los guardaba sin revisarlos, y guardar un usuario sin cambiar su contraseña volvía a cifrar el hash.
+Corregido en 2026, después de la entrega: en la versión presentada cualquier usuario con sesión podía ver, pagar o marcar como entregado un pedido ajeno, y `/api/import` quedaba abierto también en producción. Además, un token válido de un usuario ya eliminado provocaba un error 500; ahora responde 401. Los precios de cada pedido los enviaba el navegador y la API los guardaba sin revisarlos, y guardar un usuario sin cambiar su contraseña volvía a cifrar el hash. El listado de usuarios del panel también incluía el hash de cada contraseña.
 
 Pago en modo demo: el pedido se marca como pagado con los datos que envía el navegador tras el botón de PayPal, a propósito, para poder probar la compra completa. En producción, la API confirmaría el pago directamente con PayPal antes de marcarlo.
 
@@ -181,7 +182,7 @@ erDiagram
 
 Cada push a `main` corre en GitHub Actions los tests y compila las dos apps.
 
-* **API** (`server/test`, con `node:test`, Supertest y una MongoDB en memoria): login, registro, rutas privadas, token de un usuario eliminado, filtro por categoría y búsqueda, permisos de administrador y acceso a pedidos ajenos; y, en `security.test.js`, CORS, validación de datos, inyección de operadores, precios calculados en la API y límite de intentos.
+* **API** (`server/test`, con `node:test`, Supertest y una MongoDB en memoria): login, registro, rutas privadas, token de un usuario eliminado, filtro por categoría y búsqueda, permisos de administrador y acceso a pedidos ajenos; y, en `security.test.js`, CORS, validación de datos, inyección de operadores, precios calculados en la API y límite de intentos. `demo.test.js` cubre el modo demo.
 * **Tienda** (Vitest y Testing Library): formato de precios y fechas, slices de Redux (carro, sesión y cierre por sesión vencida), creación del store y tarjeta de producto.
 
 ```bash
@@ -226,6 +227,7 @@ npm run server
 | `PAYPAL_CLIENT_ID` | Client ID de una app PayPal (sandbox para pruebas). |
 | `MONGO_URL` | Cadena de conexión de MongoDB. |
 | `CORS_ORIGINS` | Orígenes de la tienda y el panel, separados por coma. Por defecto, `http://localhost:3000,http://localhost:4000`. |
+| `DEMO_MODE` | `true` en un sitio público: administrador de solo lectura y datos personales ocultos. |
 | `TRUST_PROXY` | Número de proxies delante de la API (por ejemplo `1` detrás de nginx o Render). Sin esto, el límite de intentos del login vería la IP del proxy para todos los visitantes. |
 
 Carga los datos de ejemplo; solo se insertan en colecciones vacías, así que no borra nada:

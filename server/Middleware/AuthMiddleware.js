@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import asyncHandler from "express-async-handler";
 import User from "../Models/UserModel.js";
+import { isReadOnly } from "./demo.js";
 
 const protect = asyncHandler(async (req, res, next) => {
   let token;
@@ -17,12 +18,16 @@ const protect = asyncHandler(async (req, res, next) => {
       req.user = await User.findById(decoded.id).select("-password");
       // Token válido de un usuario que ya no existe: se trata como sesión inválida (401), no como error 500
       if (!req.user) throw new Error("User not found");
-      next();
     } catch (error) {
       console.error(error);
       res.status(401);
       throw new Error("Not authorized, token failed");
     }
+    if (isReadOnly(req)) {
+      res.status(403);
+      throw new Error("El administrador de la demo es de solo lectura.");
+    }
+    return next();
   }
   if (!token) {
     res.status(401);

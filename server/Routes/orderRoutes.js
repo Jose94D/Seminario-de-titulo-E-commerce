@@ -1,6 +1,7 @@
 import express from "express";
 import asyncHandler from "express-async-handler";
 import { admin, protect } from "../Middleware/AuthMiddleware.js";
+import { maskOrder } from "../Middleware/demo.js";
 import Order from "./../Models/OrderModel.js";
 import Product from "./../Models/ProductModel.js";
 
@@ -60,7 +61,7 @@ orderRouter.get(
     const orders = await Order.find({})
       .sort({ _id: -1 })
       .populate("user", "id name email");
-    res.json(orders);
+    res.json(orders.map((order) => maskOrder(order, req.user)));
   })
 );
 // USER LOGIN ORDERS
@@ -68,8 +69,8 @@ orderRouter.get(
   "/",
   protect,
   asyncHandler(async (req, res) => {
-    const order = await Order.find({ user: req.user._id }).sort({ _id: -1 });
-    res.json(order);
+    const orders = await Order.find({ user: req.user._id }).sort({ _id: -1 });
+    res.json(orders.map((order) => maskOrder(order, req.user)));
   })
 );
 
@@ -85,7 +86,7 @@ orderRouter.get(
 
     // 404 también para pedidos ajenos, para no revelar que existen
     if (order && isOwnerOrAdmin(order, req.user)) {
-      res.json(order);
+      res.json(maskOrder(order, req.user));
     } else {
       res.status(404);
       throw new Error("Order Not Found");
@@ -111,7 +112,7 @@ orderRouter.put(
       };
 
       const updatedOrder = await order.save();
-      res.json(updatedOrder);
+      res.json(maskOrder(updatedOrder, req.user));
     } else {
       res.status(404);
       throw new Error("Order Not Found");
